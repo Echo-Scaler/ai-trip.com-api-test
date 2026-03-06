@@ -29,14 +29,19 @@ class ChatController extends Controller
         // Get conversation history from session
         $history = $request->session()->get('chat_history', []);
 
-        // Get AI response
-        $reply = $this->chatbot->reply($userMessage, $history);
+        try {
+            // Get AI response
+            $reply = $this->chatbot->reply($userMessage, $history);
 
-        // Store in session history (keep last 20 messages)
-        $history[] = ['role' => 'user', 'content' => $userMessage];
-        $history[] = ['role' => 'assistant', 'content' => $reply];
-        $history = array_slice($history, -20);
-        $request->session()->put('chat_history', $history);
+            // Store in session history (keep last 20 messages)
+            $history[] = ['role' => 'user', 'content' => $userMessage];
+            $history[] = ['role' => 'assistant', 'content' => $reply];
+            $history = array_slice($history, -20);
+            $request->session()->put('chat_history', $history);
+        } catch (\Exception $e) {
+            // If API fails (e.g. rate limit), return fallback error but DO NOT save to history
+            $reply = $e->getMessage();
+        }
 
         return response()->json([
             'reply' => $reply,

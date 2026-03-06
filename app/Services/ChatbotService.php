@@ -40,62 +40,81 @@ class ChatbotService
      */
     protected function geminiReply(string $userMessage, array $history = []): string
     {
-        try {
-            // Build conversation contents
-            $contents = [];
+        $maxRetries = 3;
+        $attempt = 0;
 
-            // Add conversation history (keep last 10 messages to reduce token usage)
-            $recentHistory = array_slice($history, -10);
-            foreach ($recentHistory as $msg) {
-                $contents[] = [
-                    'role' => $msg['role'] === 'user' ? 'user' : 'model',
-                    'parts' => [['text' => $msg['content']]],
-                ];
-            }
+        // Build conversation contents
+        $contents = [];
 
-            // Add current user message
+        // Add conversation history (keep last 10 messages to reduce token usage)
+        $recentHistory = array_slice($history, -10);
+        foreach ($recentHistory as $msg) {
             $contents[] = [
-                'role' => 'user',
-                'parts' => [['text' => $userMessage]],
+                'role' => $msg['role'] === 'user' ? 'user' : 'model',
+                'parts' => [['text' => $msg['content']]],
             ];
-
-            $url = "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$this->apiKey}";
-
-            $response = Http::timeout(15)->post($url, [
-                'system_instruction' => [
-                    'parts' => [['text' => $this->systemPrompt]],
-                ],
-                'contents' => $contents,
-                'generationConfig' => [
-                    'maxOutputTokens' => $this->maxTokens,
-                    'temperature' => $this->temperature,
-                ],
-            ]);
-
-            if ($response->successful()) {
-                $data = $response->json();
-                return $data['candidates'][0]['content']['parts'][0]['text']
-                    ?? 'I apologize, I couldn\'t generate a response. Please try again!';
-            }
-
-            Log::error('Gemini API error', [
-                'status' => $response->status(),
-                'body' => $response->body(),
-            ]);
-
-            if ($response->status() === 429) {
-                return "⏳ The AI is rate-limited right now. Please wait about 30 seconds and try again!";
-            }
-
-            if ($response->status() === 403 || $response->status() === 400) {
-                return "🔑 API key issue. Please verify your GEMINI_API_KEY in .env is correct.";
-            }
-
-            return $this->fallbackReply($userMessage);
-        } catch (\Exception $e) {
-            Log::error('Chatbot exception', ['message' => $e->getMessage()]);
-            return $this->fallbackReply($userMessage);
         }
+
+        // Add current user message
+        $contents[] = [
+            'role' => 'user',
+            'parts' => [['text' => $userMessage]],
+        ];
+
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$this->apiKey}";
+
+        while ($attempt < $maxRetries) {
+            try {
+                $response = Http::timeout(15)->post($url, [
+                    'system_instruction' => [
+                        'parts' => [['text' => $this->systemPrompt]],
+                    ],
+                    'contents' => $contents,
+                    'generationConfig' => [
+                        'maxOutputTokens' => $this->maxTokens,
+                        'temperature' => $this->temperature,
+                    ],
+                ]);
+
+                if ($response->successful()) {
+                    $data = $response->json();
+                    return $data['candidates'][0]['content']['parts'][0]['text']
+                        ?? 'I apologize, I couldn\'t generate a response. Please try again!';
+                }
+
+                $status = $response->status();
+
+                Log::warning("Gemini API error (Attempt {$attempt})", [
+                    'status' => $status,
+                    'body' => $response->body(),
+                ]);
+
+                if ($status === 429) {
+                    $attempt++;
+                    if ($attempt >= $maxRetries) {
+                        throw new \Exception("⏳ The AI is currently experiencing high demand. Please try again in a few minutes.");
+                    }
+                    // Exponential backoff
+                    sleep(pow(2, $attempt));
+                    continue;
+                }
+
+                if ($status === 403 || $status === 400) {
+                    throw new \Exception("🔑 API configuration issue. The requested operation could not be completed.");
+                }
+
+                throw new \Exception("An unexpected error occurred while communicating with the AI.");
+            } catch (\Exception $e) {
+                if ($attempt >= $maxRetries || !str_contains($e->getMessage(), '429')) {
+                    throw $e;
+                }
+
+                $attempt++;
+                sleep(pow(2, $attempt));
+            }
+        }
+
+        throw new \Exception("An unexpected error occurred. Please try again later.");
     }
 
     /**

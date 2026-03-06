@@ -12,7 +12,7 @@ return [
     */
 
     'api_key' => env('GEMINI_API_KEY', ''),
-    'model' => env('GEMINI_MODEL', 'gemini-2.0-flash'),
+    'model' => env('GEMINI_MODEL', 'gemini-2.0-flash-lite'),
     'max_tokens' => env('CHATBOT_MAX_TOKENS', 512),
     'temperature' => env('CHATBOT_TEMPERATURE', 0.7),
 

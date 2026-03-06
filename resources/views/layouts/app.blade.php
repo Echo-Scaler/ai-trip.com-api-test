@@ -328,10 +328,16 @@
     <!-- AI Chat Widget -->
     <div id="chat-widget" class="fixed bottom-6 right-6 z-[100]">
         <!-- Chat Toggle Button -->
-        <button id="chat-toggle" onclick="toggleChat()" class="w-14 h-14 rounded-full bg-gradient-to-br from-primary-600 to-accent-600 flex items-center justify-center shadow-lg shadow-primary-600/30 hover:shadow-primary-500/50 transition-all hover:scale-110 group relative">
-            <i data-lucide="message-circle" class="w-6 h-6 text-white chat-icon-open"></i>
-            <i data-lucide="x" class="w-6 h-6 text-white chat-icon-close hidden"></i>
-            <span class="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-dark-950 pulse-dot"></span>
+        <button id="chat-toggle" onclick="toggleChat()" class="h-14 px-6 rounded-full bg-gradient-to-br from-primary-600 to-accent-600 flex items-center gap-3 shadow-lg shadow-primary-600/30 hover:shadow-primary-500/50 transition-all hover:-translate-y-1 group relative chat-glow-pulse">
+            <div class="relative flex items-center justify-center">
+                <i data-lucide="bot" class="w-6 h-6 text-white chat-icon-open"></i>
+                <i data-lucide="x" class="w-6 h-6 text-white chat-icon-close hidden"></i>
+            </div>
+            <span class="text-white font-medium text-sm chat-text-open">Chat with AI</span>
+            <span class="absolute -top-1 -right-1 flex h-4 w-4">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-4 w-4 bg-green-500 border-2 border-dark-950"></span>
+            </span>
         </button>
 
         <!-- Chat Panel -->
@@ -424,6 +430,23 @@
             }
         }
 
+        /* Enhanced Chat Widget Glow */
+        .chat-glow-pulse {
+            animation: chatGlowPulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes chatGlowPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(52, 144, 252, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 0 15px rgba(52, 144, 252, 0);
+            }
+        }
+
         /* Typing indicator */
         .typing-dot {
             animation: typingBounce 1.4s ease-in-out infinite;
@@ -476,11 +499,13 @@
             const panel = document.getElementById('chat-panel');
             const openIcon = document.querySelector('.chat-icon-open');
             const closeIcon = document.querySelector('.chat-icon-close');
+            const openText = document.querySelector('.chat-text-open');
 
             if (chatOpen) {
                 panel.style.display = 'flex';
                 panel.classList.remove('hidden');
                 openIcon.classList.add('hidden');
+                if (openText) openText.classList.add('hidden');
                 closeIcon.classList.remove('hidden');
                 document.getElementById('chat-input').focus();
                 scrollChat();
@@ -488,6 +513,7 @@
                 panel.style.display = 'none';
                 panel.classList.add('hidden');
                 openIcon.classList.remove('hidden');
+                if (openText) openText.classList.remove('hidden');
                 closeIcon.classList.add('hidden');
             }
             lucide.createIcons();
