@@ -1,59 +1,212 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# TripExplorer — Trip.com API Integration (Laravel + Tailwind CSS)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A **production-ready Laravel application** that integrates with the Trip.com API for hotel & flight search, featuring a premium dark-mode Tailwind CSS UI. Ships with a **swappable mock data layer** so you can run the app immediately and swap to the real API once credentials are obtained.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🏗 Architecture
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+```
+Browser → Laravel Routes → Controllers → TripComApiContract (Interface)
+                                              ├── MockTripComApiService  (TRIPCOM_USE_MOCK=true)
+                                              └── TripComApiService      (TRIPCOM_USE_MOCK=false → Trip.com REST API)
+                                         ↓
+                                   Blade Views + Tailwind CSS
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Key Design Patterns
 
-## Learning Laravel
+- **Interface-based Service Layer** — `TripComApiContract` defines the API methods; two implementations can be swapped via `.env`
+- **Data Transfer Objects (DTOs)** — `HotelDTO` and `FlightDTO` ensure type-safe data mapping from API responses
+- **HMAC Authentication** — The real API service signs requests with `hash_hmac('sha256', ...)` for secure API communication
+- **Laravel Service Provider** — `TripComServiceProvider` auto-resolves the correct implementation from the container
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 📁 Project Structure
 
-## Laravel Sponsors
+```
+app/
+├── Contracts/
+│   └── TripComApiContract.php          # Interface for API methods
+├── Http/Controllers/
+│   ├── HomeController.php              # Landing page with featured results
+│   ├── HotelController.php             # Hotel search & detail
+│   ├── FlightController.php            # Flight search & detail
+│   └── BookingController.php           # Booking form & confirmation
+├── Providers/
+│   └── TripComServiceProvider.php      # Binds interface to implementation
+└── Services/TripCom/
+    ├── TripComApiService.php           # Real API client (HTTP + HMAC)
+    ├── MockTripComApiService.php       # Mock data for development
+    └── DTOs/
+        ├── HotelDTO.php                # Hotel data transfer object
+        └── FlightDTO.php               # Flight data transfer object
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+config/
+└── tripcom.php                         # API configuration
 
-### Premium Partners
+routes/
+└── web.php                             # All application routes
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+resources/views/
+├── layouts/app.blade.php               # Main layout (nav, footer, Tailwind)
+├── home.blade.php                      # Hero + tabbed search + featured
+├── hotels/
+│   ├── search.blade.php                # Hotel search results grid
+│   └── show.blade.php                  # Hotel detail (rooms, amenities)
+├── flights/
+│   ├── search.blade.php                # Flight results (timeline cards)
+│   └── show.blade.php                  # Flight detail (fare breakdown)
+└── booking/
+    ├── create.blade.php                # Booking form + summary sidebar
+    └── success.blade.php               # Confirmation with reference number
+```
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 🚀 Quick Start
 
-## Code of Conduct
+### Prerequisites
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- PHP 8.2+
+- Composer
 
-## Security Vulnerabilities
+### Installation
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+# Clone the repository
+git clone https://github.com/Echo-Scaler/ai-trip.com-api-test.git
+cd ai-trip.com-api-test
 
-## License
+# Install dependencies
+composer install
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Setup environment
+cp .env.example .env
+php artisan key:generate
+
+# Create SQLite database
+touch database/database.sqlite
+
+# Start the development server
+php artisan serve
+```
+
+Visit **http://127.0.0.1:8000** — the app runs in mock mode by default.
+
+---
+
+## ⚙️ Configuration
+
+### Environment Variables (`.env`)
+
+```env
+# Trip.com API Configuration
+TRIPCOM_API_BASE_URL=https://api.trip.com/openapi
+TRIPCOM_API_KEY=your-api-key-here
+TRIPCOM_API_SECRET=your-api-secret-here
+TRIPCOM_USE_MOCK=true          # Set to false for real API
+TRIPCOM_TIMEOUT=30
+TRIPCOM_CURRENCY=USD
+TRIPCOM_LANGUAGE=en
+```
+
+### Switching to Real API
+
+1. Apply for API access at [Trip.com Open Platform](https://www.trip.com/openplatform/)
+2. Set `TRIPCOM_USE_MOCK=false` in `.env`
+3. Add your real `TRIPCOM_API_KEY` and `TRIPCOM_API_SECRET`
+4. Adjust API endpoints in `TripComApiService.php` to match Trip.com's official docs
+
+---
+
+## 🛣 Routes
+
+| Method | URI               | Controller                 | Description                      |
+| ------ | ----------------- | -------------------------- | -------------------------------- |
+| GET    | `/`               | `HomeController@index`     | Home page with search & featured |
+| GET    | `/hotels/search`  | `HotelController@search`   | Hotel search results             |
+| GET    | `/hotels/{id}`    | `HotelController@show`     | Hotel detail page                |
+| GET    | `/flights/search` | `FlightController@search`  | Flight search results            |
+| GET    | `/flights/{id}`   | `FlightController@show`    | Flight detail page               |
+| GET    | `/booking`        | `BookingController@create` | Booking form                     |
+| POST   | `/booking`        | `BookingController@store`  | Process booking (demo)           |
+
+---
+
+## 🔌 API Service Layer
+
+### Interface: `TripComApiContract`
+
+```php
+interface TripComApiContract
+{
+    public function searchHotels(array $params): array;
+    public function getHotelDetail(string|int $hotelId): ?array;
+    public function searchFlights(array $params): array;
+    public function getFlightDetail(string|int $flightId): ?array;
+}
+```
+
+### Real Service: `TripComApiService`
+
+- Uses Laravel's `Http` facade for HTTP requests
+- HMAC-SHA256 request signing with API key + timestamp
+- Error handling with logging
+- Configurable timeout and base URL
+
+### Mock Service: `MockTripComApiService`
+
+- Returns 6 realistic hotels (Tokyo, Singapore, Bangkok, Hanoi, Seoul, Bali)
+- Returns 8 realistic flights (Singapore Airlines, ANA, Korean Air, etc.)
+- Supports filtering by city (hotels) and origin/destination (flights)
+- Includes detail views with room options, fare breakdowns, etc.
+
+---
+
+## 🎨 UI Features (Tailwind CSS)
+
+- **Dark mode** — Deep gradient backgrounds with glassmorphism cards
+- **Responsive** — Mobile-first design with breakpoints
+- **Animations** — Floating elements, card hover effects, shine overlays, pulse indicators
+- **Icons** — Lucide icons throughout
+- **Typography** — Inter font from Google Fonts
+- **Components** — Star ratings, discount badges, amenity tags, route timelines, fare breakdowns, progress steps
+
+---
+
+## 📝 Pages Overview
+
+| Page                | Features                                                                                      |
+| ------------------- | --------------------------------------------------------------------------------------------- |
+| **Home**            | Animated hero, tabbed hotel/flight search, featured cards, architecture info                  |
+| **Hotel Search**    | Search form, 3-column card grid, images, ratings, prices, amenity badges                      |
+| **Hotel Detail**    | Hero image, description, amenities grid, room options with booking, policies, nearby, reviews |
+| **Flight Search**   | Search form, timeline-style route cards, airline info, savings badges                         |
+| **Flight Detail**   | Visual route timeline, flight details grid, baggage info, fare breakdown sidebar              |
+| **Booking Form**    | Progress steps, traveller info, contact fields, price summary sidebar                         |
+| **Booking Success** | Animated checkmark, booking reference, summary, navigation                                    |
+
+---
+
+## 🛠 Tech Stack
+
+- **Backend** — Laravel 12 (PHP 8.2+)
+- **Frontend** — Blade templates + Tailwind CSS (Play CDN)
+- **Icons** — Lucide
+- **Font** — Inter (Google Fonts)
+- **Database** — SQLite (for sessions/cache)
+- **API Client** — Laravel HTTP (Guzzle)
+
+---
+
+## 📚 Documentation
+
+| Document                                    | Description                                                                                                 |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| [System Architecture](docs/ARCHITECTURE.md) | Layered architecture design, component breakdown, request flow, auth flow, error handling, deployment notes |
+| [API Documentation](docs/API.md)            | Full endpoint reference, request/response schemas, data models, error codes, mock data reference            |
+
+---
+
