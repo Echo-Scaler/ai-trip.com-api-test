@@ -330,50 +330,92 @@
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-white/5 bg-dark-950/80 mt-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div class="md:col-span-2">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-9 h-9 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl flex items-center justify-center">
-                            <i data-lucide="globe" class="w-5 h-5 text-white"></i>
+    <footer class="border-t border-white/5 bg-dark-950/80 pt-20 pb-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-10">
+                <!-- Brand Column -->
+                <div class="col-span-2 lg:col-span-2">
+                    <a href="{{ route('home') }}" class="flex items-center gap-3 mb-6 group">
+                        <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                            <i data-lucide="globe" class="w-6 h-6 text-white text-shadow"></i>
                         </div>
-                        <span class="text-lg font-bold text-white">TripExplorer</span>
-                    </div>
-                    <p class="text-gray-400 text-sm leading-relaxed max-w-md">
-                        A real-world Trip.com API integration demo built with Laravel & Tailwind CSS.
-                        Search hotels & flights powered by the Trip.com Partner API.
+                        <span class="text-xl font-bold bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">TripExplorer</span>
+                    </a>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-6 max-w-sm">
+                        Discover the world with ease. Our AI-powered travel engine and seamless Trip.com API integration bring you the best deals on hotels and flights worldwide.
                     </p>
-                    <div class="flex items-center gap-2 mt-4">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
-                            <span class="w-1.5 h-1.5 rounded-full bg-green-400 pulse-dot"></span>
-                            API Connected
-                        </span>
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium badge-gradient text-primary-300 border border-primary-500/20">
-                            {{ config('tripcom.use_mock') ? 'Mock Mode' : 'Live API' }}
-                        </span>
+                    <div class="flex items-center gap-4">
+                        <a href="#" class="w-10 h-10 rounded-xl glass flex items-center justify-center hover:bg-white/10 transition-all text-gray-400 hover:text-white border border-white/5">
+                            <i data-lucide="facebook" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-xl glass flex items-center justify-center hover:bg-white/10 transition-all text-gray-400 hover:text-white border border-white/5">
+                            <i data-lucide="instagram" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-xl glass flex items-center justify-center hover:bg-white/10 transition-all text-gray-400 hover:text-white border border-white/5">
+                            <i data-lucide="twitter" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-xl glass flex items-center justify-center hover:bg-white/10 transition-all text-gray-400 hover:text-white border border-white/5">
+                            <i data-lucide="youtube" class="w-5 h-5"></i>
+                        </a>
                     </div>
                 </div>
+
+                <!-- Product Column -->
                 <div>
-                    <h3 class="text-sm font-semibold text-white mb-4">{{ __('messages.explore') }}</h3>
-                    <ul class="space-y-2.5">
-                        <li><a href="{{ route('hotels.search') }}" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">{{ __('messages.search_hotels') }}</a></li>
-                        <li><a href="{{ route('flights.search') }}" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">{{ __('messages.search_flights') }}</a></li>
-                        <li><a href="{{ route('faq') }}" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">{{ __('messages.faq') }}</a></li>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-6">Product</h3>
+                    <ul class="space-y-4">
+                        <li><a href="{{ route('hotels.search') }}" class="text-sm text-gray-400 hover:text-primary-400 transition-colors flex items-center gap-2"><i data-lucide="building-2" class="w-4 h-4"></i> Hotels</a></li>
+                        <li><a href="{{ route('flights.search') }}" class="text-sm text-gray-400 hover:text-primary-400 transition-colors flex items-center gap-2"><i data-lucide="plane" class="w-4 h-4"></i> Flights</a></li>
+                        <li><a href="#" class="text-sm text-gray-400 hover:text-primary-400 transition-colors flex items-center gap-2"><i data-lucide="train" class="w-4 h-4"></i> Trains</a></li>
+                        <li><a href="#" class="text-sm text-gray-400 hover:text-primary-400 transition-colors flex items-center gap-2"><i data-lucide="camera" class="w-4 h-4"></i> Attractions</a></li>
+                        <li><a href="#" class="text-sm text-gray-400 hover:text-primary-400 transition-colors flex items-center gap-2 border-t border-white/5 pt-4 opacity-50">Car Rentals</a></li>
                     </ul>
                 </div>
+
+                <!-- Support Column -->
                 <div>
-                    <h3 class="text-sm font-semibold text-white mb-4">{{ __('messages.integration') }}</h3>
-                    <ul class="space-y-2.5">
-                        <li><a href="https://www.trip.com/openplatform/" target="_blank" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">Trip.com Open Platform</a></li>
-                        <li><a href="https://laravel.com/docs" target="_blank" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">Laravel Docs</a></li>
-                        <li><a href="https://tailwindcss.com/docs" target="_blank" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">Tailwind CSS</a></li>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-6">Support</h3>
+                    <ul class="space-y-4">
+                        <li><a href="{{ route('faq') }}" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">Help Center</a></li>
+                        <li><a href="#" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">Affiliate Program</a></li>
+                        <li><a href="#" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">Newsroom</a></li>
+                        <li><a href="#" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">Mobile App</a></li>
                     </ul>
+                </div>
+
+                <!-- Column 5: Newsletter/App -->
+                <div class="col-span-2 md:col-span-1 lg:col-span-1">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-6">Join the Journey</h3>
+                    <div class="glass p-5 rounded-2xl border border-white/10">
+                        <p class="text-[11px] text-gray-400 mb-3 leading-relaxed">Scan to download the app for exclusive mobile deals!</p>
+                        <div class="aspect-square bg-white/5 rounded-xl border border-white/10 flex items-center justify-center mb-3">
+                            <i data-lucide="qr-code" class="w-12 h-12 text-primary-400 opacity-50"></i>
+                        </div>
+                        <div class="flex gap-2">
+                            <div class="h-8 flex-1 glass rounded-lg border border-white/5 flex items-center justify-center"><i data-lucide="apple" class="w-4 h-4 text-gray-500"></i></div>
+                            <div class="h-8 flex-1 glass rounded-lg border border-white/5 flex items-center justify-center"><i data-lucide="play" class="w-4 h-4 text-gray-500"></i></div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="border-t border-white/5 mt-10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p class="text-xs text-gray-500">© {{ date('Y') }} TripExplorer — Trip.com API Integration Demo</p>
-                <p class="text-xs text-gray-600">Built with Laravel {{ app()->version() }} + Tailwind CSS</p>
+
+            <!-- Footer Bottom -->
+            <div class="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex flex-col md:flex-row items-center gap-6">
+                    <p class="text-xs text-gray-500">© {{ date('Y') }} TripExplorer Inc. All rights reserved.</p>
+                    <div class="flex items-center gap-4 text-xs">
+                        <a href="#" class="text-gray-600 hover:text-gray-400 transition-colors">Privacy Policy</a>
+                        <a href="#" class="text-gray-600 hover:text-gray-400 transition-colors">Terms of Service</a>
+                        <a href="#" class="text-gray-600 hover:text-gray-400 transition-colors">Cookie Settings</a>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4 opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all">
+                    <span class="text-[10px] text-gray-600 font-bold uppercase tracking-widest mr-2">Powered By</span>
+                    <span class="text-sm font-black text-white italic">Trip.com</span>
+                    <span class="text-sm font-bold text-white italic">Partner</span>
+                </div>
             </div>
         </div>
     </footer>

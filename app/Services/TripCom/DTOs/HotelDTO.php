@@ -9,6 +9,7 @@ class HotelDTO
         public readonly string $name,
         public readonly string $address,
         public readonly string $city,
+        public readonly string $country,
         public readonly float $rating,
         public readonly int $stars,
         public readonly float $pricePerNight,
@@ -24,25 +25,28 @@ class HotelDTO
 
     /**
      * Create a HotelDTO from an API response array.
+     * Maps real Trip.com OpenAPI fields (PascalCase/Nested) to internal properties.
      */
     public static function fromArray(array $data): self
     {
+        // Handle both simple snake_case (legacy/internal) and real Trip.com PascalCase
         return new self(
-            id: $data['id'],
-            name: $data['name'],
-            address: $data['address'] ?? '',
-            city: $data['city'] ?? '',
-            rating: (float) ($data['rating'] ?? 0),
-            stars: (int) ($data['stars'] ?? 3),
-            pricePerNight: (float) ($data['price_per_night'] ?? 0),
-            currency: $data['currency'] ?? 'USD',
-            imageUrl: $data['image_url'] ?? '',
-            amenities: $data['amenities'] ?? [],
-            description: $data['description'] ?? '',
-            latitude: $data['latitude'] ?? null,
-            longitude: $data['longitude'] ?? null,
-            originalPrice: $data['original_price'] ?? null,
-            reviewCount: $data['review_count'] ?? null,
+            id: $data['HotelID'] ?? $data['id'] ?? 0,
+            name: $data['HotelName'] ?? $data['name'] ?? '',
+            address: $data['Address'] ?? $data['address'] ?? '',
+            city: $data['CityName'] ?? $data['city'] ?? '',
+            country: $data['CountryName'] ?? $data['country'] ?? '',
+            rating: (float) ($data['Rating'] ?? $data['rating'] ?? 0),
+            stars: (int) ($data['StarRating'] ?? $data['stars'] ?? 3),
+            pricePerNight: (float) ($data['PriceInfo']['Price'] ?? $data['price_per_night'] ?? 0),
+            currency: $data['PriceInfo']['Currency'] ?? $data['currency'] ?? 'USD',
+            imageUrl: $data['ImageUrl'] ?? $data['image_url'] ?? '',
+            amenities: $data['Amenities'] ?? $data['amenities'] ?? [],
+            description: $data['Description'] ?? $data['description'] ?? '',
+            latitude: $data['Position']['Latitude'] ?? $data['latitude'] ?? null,
+            longitude: $data['Position']['Longitude'] ?? $data['longitude'] ?? null,
+            originalPrice: $data['PriceInfo']['OriginalPrice'] ?? $data['original_price'] ?? null,
+            reviewCount: $data['ReviewInfo']['ReviewCount'] ?? $data['review_count'] ?? null,
         );
     }
 
@@ -56,6 +60,7 @@ class HotelDTO
             'name' => $this->name,
             'address' => $this->address,
             'city' => $this->city,
+            'country' => $this->country,
             'rating' => $this->rating,
             'stars' => $this->stars,
             'price_per_night' => $this->pricePerNight,

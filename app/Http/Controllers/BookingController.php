@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\BookingConfirmation;
 
 class BookingController extends Controller
 {
@@ -42,6 +44,9 @@ class BookingController extends Controller
 
         // Generate a demo booking reference
         $bookingRef = strtoupper('TC' . date('ymd') . rand(1000, 9999));
+
+        // Send confirmation email
+        Mail::to($validated['email'])->send(new BookingConfirmation($validated, $bookingRef));
 
         return view('booking.success', [
             'booking' => $validated,

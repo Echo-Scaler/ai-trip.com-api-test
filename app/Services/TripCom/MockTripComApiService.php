@@ -217,22 +217,28 @@ class MockTripComApiService implements TripComApiContract
                 $suffix = ($i > count($baseHotels)) ? ' ' . $suffixes[array_rand($suffixes)] : '';
 
                 $allHotels[] = [
-                    'id' => $i,
-                    'name' => $base['name'] . $suffix,
-                    'address' => rand(10, 999) . ' Main Street, Central District',
-                    'city' => $base['city'],
-                    'country' => $base['country'],
-                    'rating' => round(rand(35, 50) / 10, 1),
-                    'stars' => rand(3, 5),
-                    'price_per_night' => $price,
-                    'original_price' => rand(0, 1) ? $price + rand(20, 100) : $price,
-                    'currency' => 'USD',
-                    'image_url' => $imageUrl,
-                    'amenities' => $amenities,
-                    'description' => $base['desc'] ?? ('A wonderful stay at ' . $base['name'] . ' located in ' . $base['city'] . '. Enjoy premium amenities and world-class service.'),
-                    'latitude' => $base['lat'] ?? ($coords['lat'] + (rand(-100, 100) / 1000)), // Use specific lat if available, else random city offset
-                    'longitude' => $base['lng'] ?? ($coords['lng'] + (rand(-100, 100) / 1000)),
-                    'review_count' => rand(50, 5000),
+                    'HotelID' => $i,
+                    'HotelName' => $base['name'] . $suffix,
+                    'Address' => rand(10, 999) . ' Main Street, Central District',
+                    'CityName' => $base['city'],
+                    'CountryName' => $base['country'],
+                    'Rating' => round(rand(35, 50) / 10, 1),
+                    'StarRating' => rand(3, 5),
+                    'PriceInfo' => [
+                        'Price' => (float)$price,
+                        'OriginalPrice' => rand(0, 1) ? (float)($price + rand(20, 100)) : (float)$price,
+                        'Currency' => 'USD',
+                    ],
+                    'ImageUrl' => $imageUrl,
+                    'Amenities' => $amenities,
+                    'Description' => $base['desc'] ?? ('A wonderful stay at ' . $base['name'] . ' located in ' . $base['city'] . '. Enjoy premium amenities and world-class service.'),
+                    'Position' => [
+                        'Latitude' => $base['lat'] ?? ($coords['lat'] + (rand(-100, 100) / 1000)),
+                        'Longitude' => $base['lng'] ?? ($coords['lng'] + (rand(-100, 100) / 1000)),
+                    ],
+                    'ReviewInfo' => [
+                        'ReviewCount' => rand(50, 5000),
+                    ],
                 ];
             }
 
@@ -315,26 +321,34 @@ class MockTripComApiService implements TripComApiContract
                 $arrivalDay = ($departHour + $durationHours) >= 24 ? '+1' : '';
 
                 $allFlights[] = [
-                    'id' => $i,
-                    'airline' => $airline['name'],
-                    'airline_logo' => $airline['logo'],
-                    'flight_number' => substr($airline['name'], 0, 2) . ' ' . rand(100, 999),
-                    'origin' => $origin['code'],
-                    'origin_city' => $origin['city'],
-                    'origin_country' => $origin['country'],
-                    'destination' => $destination['code'],
-                    'destination_city' => $destination['city'],
-                    'destination_country' => $destination['country'],
-                    'departure_time' => str_pad($departHour, 2, '0', STR_PAD_LEFT) . ':' . $departMin,
-                    'arrival_time' => str_pad($arrivalHour, 2, '0', STR_PAD_LEFT) . ':' . str_pad($durationMins, 2, '0', STR_PAD_LEFT) . $arrivalDay,
-                    'duration' => $durationHours . 'h ' . $durationMins . 'm',
-                    'price' => $price,
-                    'original_price' => rand(0, 1) ? $price + rand(50, 200) : $price,
-                    'currency' => 'USD',
-                    'cabin_class' => rand(0, 1) ? 'Economy' : 'Business',
-                    'stops' => rand(0, 2),
-                    'aircraft' => rand(0, 1) ? 'Boeing 787-' . rand(8, 9) : 'Airbus A' . rand(330, 380),
-                    'baggage' => rand(20, 30) . 'kg checked + 7kg cabin',
+                    'FlightID' => $i,
+                    'AirlineName' => $airline['name'],
+                    'AirlineLogoUrl' => $airline['logo'],
+                    'FlightNo' => substr($airline['name'], 0, 2) . ' ' . rand(100, 999),
+                    'OriginCityCode' => $origin['code'],
+                    'OriginCityName' => $origin['city'],
+                    'OriginCountryName' => $origin['country'],
+                    'DestCityCode' => $destination['code'],
+                    'DestCityName' => $destination['city'],
+                    'DestCountryName' => $destination['country'],
+                    'DepartureInfo' => [
+                        'Time' => str_pad($departHour, 2, '0', STR_PAD_LEFT) . ':' . $departMin,
+                    ],
+                    'ArrivalInfo' => [
+                        'Time' => str_pad($arrivalHour, 2, '0', STR_PAD_LEFT) . ':' . str_pad($durationMins, 2, '0', STR_PAD_LEFT) . $arrivalDay,
+                    ],
+                    'Duration' => $durationHours . 'h ' . $durationMins . 'm',
+                    'PriceInfo' => [
+                        'Price' => (float)$price,
+                        'OriginalPrice' => rand(0, 1) ? (float)($price + rand(50, 200)) : (float)$price,
+                        'Currency' => 'USD',
+                    ],
+                    'CabinClass' => rand(0, 1) ? 'Economy' : 'Business',
+                    'Stops' => rand(0, 2),
+                    'AircraftName' => rand(0, 1) ? 'Boeing 787-' . rand(8, 9) : 'Airbus A' . rand(330, 380),
+                    'BaggageInfo' => [
+                        'CheckedBaggage' => rand(20, 30) . 'kg checked + 7kg cabin',
+                    ],
                 ];
             }
 
@@ -360,9 +374,9 @@ class MockTripComApiService implements TripComApiContract
             $hotels = $hotels->filter(function ($hotel) use ($queries) {
                 // All parts of the comma-separated query must match some part of the hotel metadata
                 foreach ($queries as $query) {
-                    $match = str_contains(strtolower($hotel['city']), $query)
-                        || str_contains(strtolower($hotel['name']), $query)
-                        || str_contains(strtolower($hotel['country']), $query);
+                    $match = str_contains(strtolower($hotel['CityName'] ?? ''), $query)
+                        || str_contains(strtolower($hotel['HotelName'] ?? ''), $query)
+                        || str_contains(strtolower($hotel['CountryName'] ?? ''), $query);
                     if (!$match) return false;
                 }
                 return true;
@@ -379,7 +393,9 @@ class MockTripComApiService implements TripComApiContract
         $perPage = 9; // Display 3x3 grid
 
         return new \Illuminate\Pagination\LengthAwarePaginator(
-            $hotels->forPage($currentPage, $perPage)->values(), // Items for current page
+            $hotels->forPage($currentPage, $perPage)->values()->map(function ($hotel) {
+                return \App\Services\TripCom\DTOs\HotelDTO::fromArray($hotel)->toArray();
+            }), // Items for current page
             $hotels->count(), // Total items
             $perPage, // Items per page
             $currentPage, // Current page
@@ -431,22 +447,28 @@ class MockTripComApiService implements TripComApiContract
             ];
 
             $dynamicHotels[] = [
-                'id' => 'dh_' . $i . '_' . base64_encode($query),
-                'name' => $hotelName,
-                'address' => rand(1, 999) . " Avenue St, {$mainLocation}",
-                'city' => $mainLocation,
-                'country' => $secondaryLocation ?: 'International',
-                'rating' => $rating,
-                'stars' => rand(4, 5),
-                'price_per_night' => $price,
-                'original_price' => rand(0, 1) ? $price + rand(30, 80) : $price,
-                'currency' => 'USD',
-                'image_url' => $imageUrl,
-                'amenities' => ['Free WiFi', 'Pool', 'Restaurant', 'Gym', 'Spa'],
-                'description' => "Welcome to {$hotelName}, the premier destination in {$mainLocation}. Experience luxury and comfort at its finest.",
-                'latitude' => $baseCoords['lat'] + (rand(-50, 50) / 1000),
-                'longitude' => $baseCoords['lng'] + (rand(-50, 50) / 1000),
-                'review_count' => rand(100, 2000),
+                'HotelID' => 'dh_' . $i . '_' . base64_encode($query),
+                'HotelName' => $hotelName,
+                'Address' => rand(1, 999) . " Avenue St, {$mainLocation}",
+                'CityName' => $mainLocation,
+                'CountryName' => $secondaryLocation ?: 'International',
+                'Rating' => $rating,
+                'StarRating' => rand(4, 5),
+                'PriceInfo' => [
+                    'Price' => (float)$price,
+                    'OriginalPrice' => rand(0, 1) ? (float)($price + rand(30, 80)) : (float)$price,
+                    'Currency' => 'USD',
+                ],
+                'ImageUrl' => $imageUrl,
+                'Amenities' => ['Free WiFi', 'Pool', 'Restaurant', 'Gym', 'Spa'],
+                'Description' => "Welcome to {$hotelName}, the premier destination in {$mainLocation}. Experience luxury and comfort at its finest.",
+                'Position' => [
+                    'Latitude' => $baseCoords['lat'] + (rand(-50, 50) / 1000),
+                    'Longitude' => $baseCoords['lng'] + (rand(-50, 50) / 1000),
+                ],
+                'ReviewInfo' => [
+                    'ReviewCount' => rand(100, 2000),
+                ],
             ];
         }
 
@@ -473,7 +495,7 @@ class MockTripComApiService implements TripComApiContract
                     $query = base64_decode($parts[2]);
                     if ($query) {
                         $dynamicHotels = $this->generateDynamicHotels($query);
-                        $hotel = $dynamicHotels->first(fn($h) => $h['id'] == $hotelId);
+                        $hotel = $dynamicHotels->first(fn($h) => $h['HotelID'] == $hotelId);
                     }
                 }
             } catch (\Exception $e) {
@@ -482,7 +504,7 @@ class MockTripComApiService implements TripComApiContract
         } else {
             $hotels = $this->getMockHotels();
             foreach ($hotels as $h) {
-                if ($h['id'] == $hotelId) {
+                if ($h['HotelID'] == $hotelId) {
                     $hotel = $h;
                     break;
                 }
@@ -490,16 +512,18 @@ class MockTripComApiService implements TripComApiContract
         }
 
         if ($hotel) {
+            $hotelData = \App\Services\TripCom\DTOs\HotelDTO::fromArray($hotel)->toArray();
+
             // Add a gallery of images
-            $hotel['gallery'] = $this->amenityImagePool;
-            shuffle($hotel['gallery']);
-            $hotel['gallery'] = array_slice($hotel['gallery'], 0, 5);
+            $hotelData['gallery'] = $this->amenityImagePool;
+            shuffle($hotelData['gallery']);
+            $hotelData['gallery'] = array_slice($hotelData['gallery'], 0, 5);
 
             // Add extra detail fields for the detail view
-            $hotel['rooms'] = [
+            $hotelData['rooms'] = [
                 [
                     'name' => 'Deluxe Double Room',
-                    'price' => $hotel['price_per_night'],
+                    'price' => $hotelData['price_per_night'],
                     'max_guests' => 2,
                     'bed_type' => 'King Bed',
                     'size' => '35 m²',
@@ -508,7 +532,7 @@ class MockTripComApiService implements TripComApiContract
                 ],
                 [
                     'name' => 'Premium Suite',
-                    'price' => $hotel['price_per_night'] * 1.6,
+                    'price' => $hotelData['price_per_night'] * 1.6,
                     'max_guests' => 3,
                     'bed_type' => 'King Bed + Sofa Bed',
                     'size' => '55 m²',
@@ -517,7 +541,7 @@ class MockTripComApiService implements TripComApiContract
                 ],
                 [
                     'name' => 'Executive Family Room',
-                    'price' => $hotel['price_per_night'] * 1.3,
+                    'price' => $hotelData['price_per_night'] * 1.3,
                     'max_guests' => 4,
                     'bed_type' => '2 Queen Beds',
                     'size' => '45 m²',
@@ -525,14 +549,14 @@ class MockTripComApiService implements TripComApiContract
                     'image_url' => $this->roomImagePool['Family'],
                 ],
             ];
-            $hotel['policies'] = [
+            $hotelData['policies'] = [
                 'check_in' => '15:00',
                 'check_out' => '11:00',
                 'cancellation' => 'Free cancellation up to 24 hours before check-in',
                 'children' => 'Children of all ages are welcome',
                 'pets' => 'Pets are not allowed',
             ];
-            $hotel['nearby'] = [
+            $hotelData['nearby'] = [
                 'Airport — 45 min drive',
                 'City Center — 10 min walk',
                 'Train Station — 5 min walk',
@@ -542,12 +566,12 @@ class MockTripComApiService implements TripComApiContract
             // Add realistic mock reviews
             $shuffledReviews = $this->reviewPool;
             shuffle($shuffledReviews);
-            $hotel['reviews'] = array_slice($shuffledReviews, 0, rand(3, 5));
-            foreach ($hotel['reviews'] as &$review) {
+            $hotelData['reviews'] = array_slice($shuffledReviews, 0, rand(3, 5));
+            foreach ($hotelData['reviews'] as &$review) {
                 $review['date'] = date('Y-m-d', strtotime('-' . rand(1, 180) . ' days'));
             }
 
-            return $hotel;
+            return $hotelData;
         }
 
         return null;
@@ -571,9 +595,9 @@ class MockTripComApiService implements TripComApiContract
 
             $flights = $flights->filter(function ($flight) use ($queries) {
                 foreach ($queries as $query) {
-                    $match = str_contains(strtolower($flight['origin']), $query)
-                        || str_contains(strtolower($flight['origin_city']), $query)
-                        || str_contains(strtolower($flight['origin_country']), $query);
+                    $match = str_contains(strtolower($flight['OriginCityCode'] ?? ''), $query)
+                        || str_contains(strtolower($flight['OriginCityName'] ?? ''), $query)
+                        || str_contains(strtolower($flight['OriginCountryName'] ?? ''), $query);
                     if (!$match) return false;
                 }
                 return true;
@@ -589,9 +613,9 @@ class MockTripComApiService implements TripComApiContract
 
             $flights = $flights->filter(function ($flight) use ($queries) {
                 foreach ($queries as $query) {
-                    $match = str_contains(strtolower($flight['destination']), $query)
-                        || str_contains(strtolower($flight['destination_city']), $query)
-                        || str_contains(strtolower($flight['destination_country']), $query);
+                    $match = str_contains(strtolower($flight['DestCityCode'] ?? ''), $query)
+                        || str_contains(strtolower($flight['DestCityName'] ?? ''), $query)
+                        || str_contains(strtolower($flight['DestCountryName'] ?? ''), $query);
                     if (!$match) return false;
                 }
                 return true;
@@ -608,7 +632,9 @@ class MockTripComApiService implements TripComApiContract
         $perPage = 10; // Display 10 flights per page
 
         return new \Illuminate\Pagination\LengthAwarePaginator(
-            $flights->forPage($currentPage, $perPage)->values(), // Items for current page
+            $flights->forPage($currentPage, $perPage)->values()->map(function ($flight) {
+                return \App\Services\TripCom\DTOs\FlightDTO::fromArray($flight)->toArray();
+            }), // Items for current page
             $flights->count(), // Total items
             $perPage, // Items per page
             $currentPage, // Current page
@@ -643,26 +669,34 @@ class MockTripComApiService implements TripComApiContract
             $duration = rand(6, 16);
 
             $dynamicFlights[] = [
-                'id' => 'df_' . $i . '_' . base64_encode($origin . '|' . $destination),
-                'airline' => $airline['name'],
-                'airline_logo' => $airline['logo'],
-                'flight_number' => strtoupper(substr($originName, 0, 1) . substr($destName, 0, 1)) . ' ' . rand(100, 999),
-                'origin' => strtoupper(substr($originName, 0, 3)),
-                'origin_city' => $originName,
-                'origin_country' => 'Search Origin',
-                'destination' => strtoupper(substr($destName, 0, 3)),
-                'destination_city' => $destName,
-                'destination_country' => 'Search Destination',
-                'departure_time' => str_pad($hour, 2, '0', STR_PAD_LEFT) . ':00',
-                'arrival_time' => str_pad(($hour + $duration) % 24, 2, '0', STR_PAD_LEFT) . ':00',
-                'duration' => $duration . 'h 00m',
-                'price' => $price,
-                'original_price' => $price + rand(100, 300),
-                'currency' => 'USD',
-                'cabin_class' => 'Economy',
-                'stops' => rand(0, 1),
-                'aircraft' => 'Boeing 787 Dreamliner',
-                'baggage' => '23kg checked',
+                'FlightID' => 'df_' . $i . '_' . base64_encode($origin . '|' . $destination),
+                'AirlineName' => $airline['name'],
+                'AirlineLogoUrl' => $airline['logo'],
+                'FlightNo' => strtoupper(substr($originName, 0, 1) . substr($destName, 0, 1)) . ' ' . rand(100, 999),
+                'OriginCityCode' => strtoupper(substr($originName, 0, 3)),
+                'OriginCityName' => $originName,
+                'OriginCountryName' => 'Search Origin',
+                'DestCityCode' => strtoupper(substr($destName, 0, 3)),
+                'DestCityName' => $destName,
+                'DestCountryName' => 'Search Destination',
+                'DepartureInfo' => [
+                    'Time' => str_pad($hour, 2, '0', STR_PAD_LEFT) . ':00',
+                ],
+                'ArrivalInfo' => [
+                    'Time' => str_pad(($hour + $duration) % 24, 2, '0', STR_PAD_LEFT) . ':00',
+                ],
+                'Duration' => $duration . 'h 00m',
+                'PriceInfo' => [
+                    'Price' => (float)$price,
+                    'OriginalPrice' => (float)($price + rand(100, 300)),
+                    'Currency' => 'USD',
+                ],
+                'CabinClass' => 'Economy',
+                'Stops' => rand(0, 1),
+                'AircraftName' => 'Boeing 787 Dreamliner',
+                'BaggageInfo' => [
+                    'CheckedBaggage' => '23kg checked',
+                ],
             ];
         }
 
@@ -688,7 +722,7 @@ class MockTripComApiService implements TripComApiContract
                     if ($decoded && str_contains($decoded, '|')) {
                         [$origin, $destination] = explode('|', $decoded);
                         $dynamicFlights = $this->generateDynamicFlights($origin, $destination);
-                        $flight = $dynamicFlights->first(fn($f) => $f['id'] == $flightId);
+                        $flight = $dynamicFlights->first(fn($f) => $f['FlightID'] == $flightId);
                     }
                 }
             } catch (\Exception $e) {
@@ -697,7 +731,7 @@ class MockTripComApiService implements TripComApiContract
         } else {
             $flights = $this->getMockFlights();
             foreach ($flights as $f) {
-                if ($f['id'] == $flightId) {
+                if ($f['FlightID'] == $flightId) {
                     $flight = $f;
                     break;
                 }
@@ -705,14 +739,16 @@ class MockTripComApiService implements TripComApiContract
         }
 
         if ($flight) {
+            $flightData = \App\Services\TripCom\DTOs\FlightDTO::fromArray($flight)->toArray();
+
             // Add extra detail fields
-            $flight['fare_breakdown'] = [
-                'base_fare' => round($flight['price'] * 0.75, 2),
-                'taxes' => round($flight['price'] * 0.15, 2),
-                'surcharges' => round($flight['price'] * 0.07, 2),
-                'service_fee' => round($flight['price'] * 0.03, 2),
+            $flightData['fare_breakdown'] = [
+                'base_fare' => round($flightData['price'] * 0.75, 2),
+                'taxes' => round($flightData['price'] * 0.15, 2),
+                'surcharges' => round($flightData['price'] * 0.07, 2),
+                'service_fee' => round($flightData['price'] * 0.03, 2),
             ];
-            $flight['flight_details'] = [
+            $flightData['flight_details'] = [
                 'departure_terminal' => 'Terminal ' . rand(1, 3),
                 'arrival_terminal' => 'Terminal ' . rand(1, 4),
                 'meal' => 'Complimentary meals and beverages',
@@ -720,7 +756,7 @@ class MockTripComApiService implements TripComApiContract
                 'wifi' => 'Available (paid)',
                 'power' => 'USB and AC power at every seat',
             ];
-            return $flight;
+            return $flightData;
         }
 
         return null;
