@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Contracts\TripComApiContract;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -12,9 +13,11 @@ class ChatbotService
     protected int $maxTokens;
     protected float $temperature;
     protected string $systemPrompt;
+    protected TripComApiContract $tripComApi;
 
-    public function __construct()
+    public function __construct(TripComApiContract $tripComApi)
     {
+        $this->tripComApi = $tripComApi;
         $this->apiKey = config('chatbot.api_key', '');
         $this->model = config('chatbot.model', 'gemini-2.0-flash');
         $this->maxTokens = config('chatbot.max_tokens', 512);
@@ -41,7 +44,6 @@ class ChatbotService
     protected function geminiReply(string $userMessage, array $history = []): string
     {
         $maxRetries = 3;
-        $attempt = 0;
 
         // Build conversation contents
         $contents = [];
@@ -61,60 +63,176 @@ class ChatbotService
             'parts' => [['text' => $userMessage]],
         ];
 
+        // Define tools (Function Calling)
+        $tools = [
+            [
+                'functionDeclarations' => [
+                    [
+                        'name' => 'search_hotels',
+                        'description' => 'Search for live hotel prices, ratings, and availability in a specific city. Use this when the user asks for hotel recommendations or pricing.',
+                        'parameters' => [
+                            'type' => 'OBJECT',
+                            'properties' => [
+                                'city' => [
+                                    'type' => 'STRING',
+                                    'description' => 'The city to search for hotels in, e.g. Tokyo, Singapore.',
+                                ],
+                            ],
+                            'required' => ['city'],
+                        ],
+                    ],
+                    [
+                        'name' => 'search_flights',
+                        'description' => 'Search for live flight schedules, airlines, and prices between two cities. Use this when the user asks for flight deals or routes.',
+                        'parameters' => [
+                            'type' => 'OBJECT',
+                            'properties' => [
+                                'origin' => [
+                                    'type' => 'STRING',
+                                    'description' => 'The origin city or airport code, e.g. NRT, Tokyo.',
+                                ],
+                                'destination' => [
+                                    'type' => 'STRING',
+                                    'description' => 'The destination city or airport code, e.g. SIN, Singapore.',
+                                ],
+                            ],
+                            'required' => ['origin', 'destination'],
+                        ],
+                    ]
+                ]
+            ]
+        ];
+
         $url = "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$this->apiKey}";
 
-        while ($attempt < $maxRetries) {
-            try {
-                $response = Http::timeout(15)->post($url, [
-                    'system_instruction' => [
-                        'parts' => [['text' => $this->systemPrompt]],
-                    ],
-                    'contents' => $contents,
-                    'generationConfig' => [
-                        'maxOutputTokens' => $this->maxTokens,
-                        'temperature' => $this->temperature,
-                    ],
-                ]);
+        // Allow up to 3 function calls in a single conversational turn
+        $maxFunctionCalls = 3;
+        $functionCallCount = 0;
 
-                if ($response->successful()) {
-                    $data = $response->json();
-                    return $data['candidates'][0]['content']['parts'][0]['text']
-                        ?? 'I apologize, I couldn\'t generate a response. Please try again!';
-                }
+        while ($functionCallCount <= $maxFunctionCalls) {
+            $attempt = 0;
+            $success = false;
+            $data = [];
 
-                $status = $response->status();
+            while ($attempt < $maxRetries) {
+                try {
+                    $response = Http::timeout(20)->post($url, [
+                        'system_instruction' => [
+                            'parts' => [['text' => $this->systemPrompt . " You are a helpful travel assistant. When you use tools to get data, present the data beautifully using markdown formatting (e.g. bolding names, using bullet points)."]],
+                        ],
+                        'contents' => $contents,
+                        'tools' => $tools,
+                        'generationConfig' => [
+                            'maxOutputTokens' => $this->maxTokens,
+                            'temperature' => $this->temperature,
+                        ],
+                    ]);
 
-                Log::warning("Gemini API error (Attempt {$attempt})", [
-                    'status' => $status,
-                    'body' => $response->body(),
-                ]);
-
-                if ($status === 429) {
-                    $attempt++;
-                    if ($attempt >= $maxRetries) {
-                        throw new \Exception("⏳ The AI is currently experiencing high demand. Please try again in a few minutes.");
+                    if ($response->successful()) {
+                        $data = $response->json();
+                        $success = true;
+                        break; // Break retry loop
                     }
-                    // Exponential backoff
+
+                    $status = $response->status();
+
+                    Log::warning("Gemini API error (Attempt {$attempt})", [
+                        'status' => $status,
+                        'body' => $response->body(),
+                    ]);
+
+                    if ($status === 429) {
+                        $attempt++;
+                        if ($attempt >= $maxRetries) {
+                            throw new \Exception("⏳ The AI is currently experiencing high demand. Please try again in a few minutes.");
+                        }
+                        sleep(pow(2, $attempt));
+                        continue;
+                    }
+
+                    if ($status === 403 || $status === 400) {
+                        throw new \Exception("🔑 API configuration issue. The requested operation could not be completed.");
+                    }
+
+                    throw new \Exception("An unexpected error occurred while communicating with the AI.");
+                } catch (\Exception $e) {
+                    if ($attempt >= $maxRetries || (!str_contains($e->getMessage(), '429') && !str_contains($e->getMessage(), 'timeout'))) {
+                        throw $e;
+                    }
+                    $attempt++;
                     sleep(pow(2, $attempt));
-                    continue;
                 }
+            }
 
-                if ($status === 403 || $status === 400) {
-                    throw new \Exception("🔑 API configuration issue. The requested operation could not be completed.");
+            if (!$success) {
+                throw new \Exception("An unexpected error occurred. Please try again later.");
+            }
+
+            $candidate = $data['candidates'][0] ?? null;
+            if (!$candidate) {
+                return 'I apologize, I couldn\'t generate a response. Please try again!';
+            }
+
+            $parts = $candidate['content']['parts'] ?? [];
+            $hasFunctionCall = false;
+
+            foreach ($parts as $part) {
+                if (isset($part['functionCall'])) {
+                    $hasFunctionCall = true;
+                    $functionCall = $part['functionCall'];
+                    $name = $functionCall['name'];
+                    $args = $functionCall['args'];
+
+                    Log::info("Gemini invoking tool: {$name}", $args);
+
+                    // Append the model's functionCall to contents history
+                    $contents[] = [
+                        'role' => 'model',
+                        'parts' => [['functionCall' => $functionCall]]
+                    ];
+
+                    // Execute the requested function
+                    $functionResult = [];
+                    try {
+                        if ($name === 'search_hotels') {
+                            $functionResult = $this->tripComApi->searchHotels(['city' => $args['city'] ?? '']);
+                        } elseif ($name === 'search_flights') {
+                            $functionResult = $this->tripComApi->searchFlights([
+                                'origin' => $args['origin'] ?? '',
+                                'destination' => $args['destination'] ?? ''
+                            ]);
+                        } else {
+                            $functionResult = ['error' => 'Unknown function'];
+                        }
+                    } catch (\Exception $e) {
+                        Log::error("Function call {$name} failed: " . $e->getMessage());
+                        $functionResult = ['error' => 'Failed to retrieve data.'];
+                    }
+
+                    // Append the functionResponse to contents history
+                    $contents[] = [
+                        'role' => 'function',
+                        'parts' => [
+                            [
+                                'functionResponse' => [
+                                    'name' => $name,
+                                    'response' => ['result' => $functionResult]
+                                ]
+                            ]
+                        ]
+                    ];
+
+                    $functionCallCount++;
                 }
+            }
 
-                throw new \Exception("An unexpected error occurred while communicating with the AI.");
-            } catch (\Exception $e) {
-                if ($attempt >= $maxRetries || !str_contains($e->getMessage(), '429')) {
-                    throw $e;
-                }
-
-                $attempt++;
-                sleep(pow(2, $attempt));
+            // If there was no function call, the model has finished its thought process and returned text
+            if (!$hasFunctionCall) {
+                return $parts[0]['text'] ?? '';
             }
         }
 
-        throw new \Exception("An unexpected error occurred. Please try again later.");
+        return "I'm sorry, I couldn't process your request as it required too many tool calls.";
     }
 
     /**
