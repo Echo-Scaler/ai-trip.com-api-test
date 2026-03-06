@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\FlightController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HotelController;
@@ -20,3 +21,7 @@ Route::get('/flights/{id}', [FlightController::class, 'show'])->name('flights.sh
 // Booking
 Route::get('/booking', [BookingController::class, 'create'])->name('booking.create');
 Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
+
+// AI Chatbot
+Route::post('/chat', [ChatController::class, 'chat'])->name('chat.send');
+Route::post('/chat/clear', [ChatController::class, 'clear'])->name('chat.clear');

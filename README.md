@@ -12,6 +12,10 @@ Browser → Laravel Routes → Controllers → TripComApiContract (Interface)
                                               └── TripComApiService      (TRIPCOM_USE_MOCK=false → Trip.com REST API)
                                          ↓
                                    Blade Views + Tailwind CSS
+
+Browser Chat Widget → POST /chat → ChatController → ChatbotService
+                                                        ├── Gemini API (if GEMINI_API_KEY set)
+                                                        └── Smart Fallback (keyword matching)
 ```
 
 ### Key Design Patterns
@@ -33,25 +37,29 @@ app/
 │   ├── HomeController.php              # Landing page with featured results
 │   ├── HotelController.php             # Hotel search & detail
 │   ├── FlightController.php            # Flight search & detail
-│   └── BookingController.php           # Booking form & confirmation
+│   ├── BookingController.php           # Booking form & confirmation
+│   └── ChatController.php             # 🤖 AI chatbot endpoint
 ├── Providers/
 │   └── TripComServiceProvider.php      # Binds interface to implementation
-└── Services/TripCom/
-    ├── TripComApiService.php           # Real API client (HTTP + HMAC)
-    ├── MockTripComApiService.php       # Mock data for development
-    └── DTOs/
-        ├── HotelDTO.php                # Hotel data transfer object
-        └── FlightDTO.php               # Flight data transfer object
+├── Services/
+│   ├── ChatbotService.php             # 🤖 Gemini API + fallback engine
+│   └── TripCom/
+│       ├── TripComApiService.php       # Real API client (HTTP + HMAC)
+│       ├── MockTripComApiService.php   # Mock data for development
+│       └── DTOs/
+│           ├── HotelDTO.php            # Hotel data transfer object
+│           └── FlightDTO.php           # Flight data transfer object
 
 config/
-└── tripcom.php                         # API configuration
+├── tripcom.php                         # Trip.com API configuration
+└── chatbot.php                         # 🤖 Gemini AI chatbot config
 
 routes/
 └── web.php                             # All application routes
 
 resources/views/
-├── layouts/app.blade.php               # Main layout (nav, footer, Tailwind)
-├── home.blade.php                      # Hero + tabbed search + featured
+├── layouts/app.blade.php               # Main layout + 🤖 chat widget
+├── home.blade.php                      # Hero + search + coupons + packages
 ├── hotels/
 │   ├── search.blade.php                # Hotel search results grid
 │   └── show.blade.php                  # Hotel detail (rooms, amenities)
@@ -61,6 +69,11 @@ resources/views/
 └── booking/
     ├── create.blade.php                # Booking form + summary sidebar
     └── success.blade.php               # Confirmation with reference number
+
+docs/
+├── ARCHITECTURE.md                     # System architecture design
+├── API.md                              # API reference documentation
+└── AI_CHATBOT.md                       # 🤖 Complete Gemini AI chatbot guide
 ```
 
 ---
@@ -209,4 +222,3 @@ interface TripComApiContract
 | [API Documentation](docs/API.md)            | Full endpoint reference, request/response schemas, data models, error codes, mock data reference            |
 
 ---
-
