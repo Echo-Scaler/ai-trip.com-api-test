@@ -8,9 +8,9 @@
     <!-- Breadcrumb -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <nav class="flex items-center gap-2 text-sm text-gray-400">
-            <a href="{{ route('home') }}" class="hover:text-primary-400 transition-colors">Home</a>
+            <a href="{{ route('home') }}" class="hover:text-primary-400 transition-colors">{{ __('messages.home') }}</a>
             <i data-lucide="chevron-right" class="w-4 h-4"></i>
-            <a href="{{ route('hotels.search') }}" class="hover:text-primary-400 transition-colors">Hotels</a>
+            <a href="{{ route('hotels.search') }}" class="hover:text-primary-400 transition-colors">{{ __('messages.hotels') }}</a>
             <i data-lucide="chevron-right" class="w-4 h-4"></i>
             <span class="text-white">{{ $hotel['name'] }}</span>
         </nav>
@@ -45,7 +45,7 @@
                 </div>
                 @if(isset($hotel['original_price']) && $hotel['original_price'] > $hotel['price_per_night'])
                 <div class="px-3 py-1.5 bg-red-500/90 rounded-xl text-sm font-bold text-white">
-                    Save {{ round((1 - $hotel['price_per_night'] / $hotel['original_price']) * 100) }}%
+                    {{ __('messages.save') }} {{ round((1 - $hotel['price_per_night'] / $hotel['original_price']) * 100) }}%
                 </div>
                 @endif
             </div>
@@ -58,7 +58,7 @@
             <!-- Description -->
             <div class="glass rounded-2xl p-6">
                 <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
-                    <i data-lucide="info" class="w-5 h-5 text-primary-400"></i> About this hotel
+                    <i data-lucide="info" class="w-5 h-5 text-primary-400"></i> {{ __('messages.about_hotel') }}
                 </h2>
                 <p class="text-gray-300 leading-relaxed">{{ $hotel['description'] }}</p>
             </div>
@@ -66,7 +66,7 @@
             <!-- Amenities -->
             <div class="glass rounded-2xl p-6">
                 <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                    <i data-lucide="sparkles" class="w-5 h-5 text-primary-400"></i> Amenities
+                    <i data-lucide="sparkles" class="w-5 h-5 text-primary-400"></i> {{ __('messages.amenities') }}
                 </h2>
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     @foreach($hotel['amenities'] as $amenity)
@@ -82,7 +82,7 @@
             @if(isset($hotel['rooms']))
             <div class="glass rounded-2xl p-6">
                 <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                    <i data-lucide="bed-double" class="w-5 h-5 text-primary-400"></i> Available Rooms
+                    <i data-lucide="bed-double" class="w-5 h-5 text-primary-400"></i> {{ __('messages.available_rooms') }}
                 </h2>
                 <div class="space-y-4">
                     @foreach($hotel['rooms'] as $room)
@@ -102,11 +102,11 @@
                                 </div>
                             </div>
                             <div class="text-right flex-shrink-0">
-                                <div class="text-2xl font-bold text-white">${{ number_format($room['price']) }}</div>
-                                <div class="text-xs text-gray-400 mb-3">per night</div>
+                                <div class="text-2xl font-bold text-white">{{ \App\Helpers\CurrencyHelper::format($room['price']) }}</div>
+                                <div class="text-xs text-gray-400 mb-3">{{ __('messages.per_night') }}</div>
                                 <a href="{{ route('booking.create', ['type' => 'hotel', 'item_id' => $hotel['id'], 'item_name' => $hotel['name'] . ' — ' . $room['name'], 'price' => $room['price'], 'currency' => $hotel['currency']]) }}"
                                     class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-primary-600/25">
-                                    Book Now
+                                    {{ __('messages.book_now') }}
                                 </a>
                             </div>
                         </div>
@@ -120,20 +120,20 @@
             @if(isset($hotel['policies']))
             <div class="glass rounded-2xl p-6">
                 <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                    <i data-lucide="file-text" class="w-5 h-5 text-primary-400"></i> Hotel Policies
+                    <i data-lucide="file-text" class="w-5 h-5 text-primary-400"></i> {{ __('messages.hotel_policies') }}
                 </h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="flex items-start gap-3">
                         <i data-lucide="log-in" class="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0"></i>
                         <div>
-                            <div class="text-sm font-medium text-white">Check-in</div>
+                            <div class="text-sm font-medium text-white">{{ __('messages.check_in') }}</div>
                             <div class="text-sm text-gray-400">{{ $hotel['policies']['check_in'] }}</div>
                         </div>
                     </div>
                     <div class="flex items-start gap-3">
                         <i data-lucide="log-out" class="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0"></i>
                         <div>
-                            <div class="text-sm font-medium text-white">Check-out</div>
+                            <div class="text-sm font-medium text-white">{{ __('messages.check_out') }}</div>
                             <div class="text-sm text-gray-400">{{ $hotel['policies']['check_out'] }}</div>
                         </div>
                     </div>
@@ -158,7 +158,7 @@
             <!-- Guest Reviews Section -->
             <div class="glass rounded-2xl p-6 mt-8">
                 <h2 class="text-xl font-black text-white mb-6 flex items-center gap-2">
-                    <i data-lucide="messages-square" class="w-6 h-6 text-primary-400"></i> Guest Reviews
+                    <i data-lucide="messages-square" class="w-6 h-6 text-primary-400"></i> {{ __('messages.guest_reviews') }}
                 </h2>
 
                 @if(isset($reviews) && $reviews->isNotEmpty())
@@ -181,25 +181,25 @@
                 @else
                 <div class="text-center py-8 glass-light rounded-xl border border-dashed border-white/10 mb-8">
                     <i data-lucide="message-circle" class="w-10 h-10 text-gray-500 mx-auto mb-3"></i>
-                    <h3 class="text-white font-bold mb-1">No reviews yet</h3>
-                    <p class="text-sm text-gray-400">Be the first to share your experience at this hotel!</p>
+                    <h3 class="text-white font-bold mb-1">{{ __('messages.no_reviews_yet') }}</h3>
+                    <p class="text-sm text-gray-400">{{ __('messages.no_reviews_yet_desc') }}</p>
                 </div>
                 @endif
 
                 <!-- Write a Review Form -->
                 <div class="glass-light rounded-xl p-6 border border-white/10">
-                    <h3 class="text-lg font-bold text-white mb-4">Write a Review</h3>
+                    <h3 class="text-lg font-bold text-white mb-4">{{ __('messages.write_review') }}</h3>
                     <form action="{{ route('reviews.store', $hotel['id']) }}" method="POST" class="space-y-4">
                         @csrf
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-1">Your Name</label>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">{{ __('messages.your_name') }}</label>
                             <input type="text" name="user_name" required class="w-full bg-dark-900 border border-white/10 rounded-xl py-2.5 px-4 text-white focus:outline-none focus:border-primary-500 transition-colors" placeholder="John Doe">
                             @error('user_name') <span class="text-red-400 text-xs">{{ $message }}</span> @enderror
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2">Rating</label>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">{{ __('messages.rating') }}</label>
                             <input type="hidden" name="rating" id="rating-input" value="5">
                             <div class="flex items-center gap-1 cursor-pointer" id="star-selector">
                                 @for($i = 1; $i <= 5; $i++)
@@ -210,13 +210,13 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-1">Your Review</label>
-                            <textarea name="comment" required rows="3" class="w-full bg-dark-900 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-primary-500 transition-colors" placeholder="Tell us about your stay..."></textarea>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">{{ __('messages.your_review') }}</label>
+                            <textarea name="comment" required rows="3" class="w-full bg-dark-900 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-primary-500 transition-colors" placeholder="{{ __('messages.your_review_placeholder') }}"></textarea>
                             @error('comment') <span class="text-red-400 text-xs">{{ $message }}</span> @enderror
                         </div>
 
                         <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary-600/25">
-                            Post Review
+                            {{ __('messages.post_review') }}
                         </button>
                     </form>
                 </div>
@@ -228,19 +228,19 @@
             <!-- Price Card -->
             <div class="glass rounded-2xl p-6 sticky top-24">
                 <div class="text-center mb-6">
-                    <div class="text-sm text-gray-400 mb-1">Starting from</div>
+                    <div class="text-sm text-gray-400 mb-1">{{ __('messages.starting_from') }}</div>
                     @if(isset($hotel['original_price']))
-                    <div class="text-sm text-gray-500 line-through">${{ number_format($hotel['original_price']) }}</div>
+                    <div class="text-sm text-gray-500 line-through">{{ \App\Helpers\CurrencyHelper::format($hotel['original_price']) }}</div>
                     @endif
-                    <div class="text-3xl font-black text-white">${{ number_format($hotel['price_per_night']) }}<span class="text-base font-normal text-gray-400">/night</span></div>
+                    <div class="text-3xl font-black text-white">{{ \App\Helpers\CurrencyHelper::format($hotel['price_per_night']) }}<span class="text-base font-normal text-gray-400">/{{ __('messages.per_night') }}</span></div>
                 </div>
                 <a href="{{ route('booking.create', ['type' => 'hotel', 'item_id' => $hotel['id'], 'item_name' => $hotel['name'], 'price' => $hotel['price_per_night'], 'currency' => $hotel['currency']]) }}"
                     class="block w-full py-3.5 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white text-center font-semibold rounded-xl transition-all shadow-lg shadow-primary-600/25 hover:shadow-primary-500/40">
-                    Book Now
+                    {{ __('messages.book_now') }}
                 </a>
                 <div class="mt-4 flex items-center justify-center gap-2 text-xs text-gray-400">
                     <i data-lucide="shield-check" class="w-4 h-4 text-green-400"></i>
-                    Free cancellation available
+                    {{ __('messages.free_cancellation') }}
                 </div>
             </div>
 
@@ -248,7 +248,7 @@
             @if(isset($hotel['nearby']))
             <div class="glass rounded-2xl p-6">
                 <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
-                    <i data-lucide="compass" class="w-4 h-4 text-primary-400"></i> Nearby
+                    <i data-lucide="compass" class="w-4 h-4 text-primary-400"></i> {{ __('messages.nearby') }}
                 </h3>
                 <ul class="space-y-2.5">
                     @foreach($hotel['nearby'] as $place)
@@ -264,7 +264,7 @@
             <!-- Reviews summary -->
             <div class="glass rounded-2xl p-6">
                 <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
-                    <i data-lucide="message-square" class="w-4 h-4 text-primary-400"></i> Guest Reviews
+                    <i data-lucide="message-square" class="w-4 h-4 text-primary-400"></i> {{ __('messages.guest_reviews') }}
                 </h3>
                 <div class="flex items-center gap-3 mb-3">
                     <div class="text-3xl font-black text-white">{{ $hotel['rating'] }}</div>
@@ -274,14 +274,14 @@
                                 <i data-lucide="star" class="w-4 h-4 {{ $i < round($hotel['rating']) ? 'star-filled fill-current' : 'text-gray-600' }}"></i>
                                 @endfor
                         </div>
-                        <div class="text-xs text-gray-400 mt-0.5">{{ number_format($hotel['review_count'] ?? 0) }} reviews</div>
+                        <div class="text-xs text-gray-400 mt-0.5">{{ number_format($hotel['review_count'] ?? 0) }} {{ __('messages.reviews') }}</div>
                     </div>
                 </div>
                 <div class="text-sm text-gray-400">
-                    @if($hotel['rating'] >= 4.5) Exceptional
-                    @elseif($hotel['rating'] >= 4.0) Excellent
-                    @elseif($hotel['rating'] >= 3.5) Very Good
-                    @else Good
+                    @if($hotel['rating'] >= 4.5) {{ __('messages.exceptional') }}
+                    @elseif($hotel['rating'] >= 4.0) {{ __('messages.excellent') }}
+                    @elseif($hotel['rating'] >= 3.5) {{ __('messages.very_good') }}
+                    @else {{ __('messages.good') }}
                     @endif
                 </div>
             </div>

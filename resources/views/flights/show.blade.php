@@ -6,9 +6,9 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <!-- Breadcrumb -->
     <nav class="flex items-center gap-2 text-sm text-gray-400 mb-6">
-        <a href="{{ route('home') }}" class="hover:text-primary-400 transition-colors">Home</a>
+        <a href="{{ route('home') }}" class="hover:text-primary-400 transition-colors">{{ __('messages.home') }}</a>
         <i data-lucide="chevron-right" class="w-4 h-4"></i>
-        <a href="{{ route('flights.search') }}" class="hover:text-primary-400 transition-colors">Flights</a>
+        <a href="{{ route('flights.search') }}" class="hover:text-primary-400 transition-colors">{{ __('messages.flights') }}</a>
         <i data-lucide="chevron-right" class="w-4 h-4"></i>
         <span class="text-white">{{ $flight['flight_number'] }}</span>
     </nav>
@@ -28,7 +28,7 @@
                     </div>
                     @if(isset($flight['original_price']) && $flight['original_price'] > $flight['price'])
                     <div class="ml-auto px-3 py-1 bg-green-500/10 text-green-400 rounded-xl text-sm font-semibold border border-green-500/20">
-                        Save ${{ number_format($flight['original_price'] - $flight['price']) }}
+                        {{ __('messages.save') }} {{ \App\Helpers\CurrencyHelper::format($flight['original_price'] - $flight['price']) }}
                     </div>
                     @endif
                 </div>
@@ -52,7 +52,7 @@
                         </div>
                         <div class="absolute bottom-0 w-full text-center">
                             <span class="text-xs {{ $flight['stops'] == 0 ? 'text-green-400' : 'text-yellow-400' }} font-medium">
-                                {{ $flight['stops'] == 0 ? '✈ Direct Flight' : $flight['stops'] . ' Stop(s)' }}
+                                {{ $flight['stops'] == 0 ? '✈ ' . __('messages.direct') : $flight['stops'] . ' ' . __('messages.stops') }}
                             </span>
                         </div>
                     </div>
@@ -69,7 +69,7 @@
             @if(isset($flight['flight_details']))
             <div class="glass rounded-2xl p-6">
                 <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                    <i data-lucide="info" class="w-5 h-5 text-primary-400"></i> Flight Details
+                    <i data-lucide="info" class="w-5 h-5 text-primary-400"></i> {{ __('messages.flight_details') }}
                 </h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     @foreach($flight['flight_details'] as $key => $value)
@@ -96,15 +96,15 @@
             <!-- Baggage Info -->
             <div class="glass rounded-2xl p-6">
                 <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                    <i data-lucide="luggage" class="w-5 h-5 text-primary-400"></i> Baggage Allowance
+                    <i data-lucide="luggage" class="w-5 h-5 text-primary-400"></i> {{ __('messages.baggage_allowance') }}
                 </h2>
                 <div class="flex items-center gap-3 p-4 rounded-xl bg-white/5">
                     <div class="w-12 h-12 rounded-xl bg-primary-500/10 flex items-center justify-center flex-shrink-0">
                         <i data-lucide="briefcase" class="w-6 h-6 text-primary-400"></i>
                     </div>
                     <div>
-                        <div class="text-sm font-semibold text-white">{{ $flight['cabin_class'] }} Class</div>
-                        <div class="text-sm text-gray-400">{{ $flight['baggage'] ?? 'Standard baggage allowance' }}</div>
+                        <div class="text-sm font-semibold text-white">{{ $flight['cabin_class'] }} {{ __('messages.class') }}</div>
+                        <div class="text-sm text-gray-400">{{ $flight['baggage'] ?? __('messages.standard_baggage') }}</div>
                     </div>
                 </div>
             </div>
@@ -115,22 +115,22 @@
             <!-- Price & Booking -->
             <div class="glass rounded-2xl p-6 sticky top-24">
                 <div class="text-center mb-6">
-                    <div class="text-sm text-gray-400 mb-1">Total fare per person</div>
+                    <div class="text-sm text-gray-400 mb-1">{{ __('messages.total_fare') }}</div>
                     @if(isset($flight['original_price']))
-                    <div class="text-sm text-gray-500 line-through">${{ number_format($flight['original_price']) }}</div>
+                    <div class="text-sm text-gray-500 line-through">{{ \App\Helpers\CurrencyHelper::format($flight['original_price']) }}</div>
                     @endif
-                    <div class="text-3xl font-black text-white">${{ number_format($flight['price']) }}</div>
+                    <div class="text-3xl font-black text-white">{{ \App\Helpers\CurrencyHelper::format($flight['price']) }}</div>
                     <div class="text-xs text-gray-500">{{ $flight['cabin_class'] }}</div>
                 </div>
 
                 <a href="{{ route('booking.create', ['type' => 'flight', 'item_id' => $flight['id'], 'item_name' => $flight['airline'] . ' ' . $flight['flight_number'] . ' (' . $flight['origin'] . ' → ' . $flight['destination'] . ')', 'price' => $flight['price'], 'currency' => $flight['currency']]) }}"
                     class="block w-full py-3.5 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white text-center font-semibold rounded-xl transition-all shadow-lg shadow-primary-600/25 hover:shadow-primary-500/40 mb-4">
-                    Book This Flight
+                    {{ __('messages.book_this_flight') }}
                 </a>
 
                 <div class="flex items-center justify-center gap-2 text-xs text-gray-400">
                     <i data-lucide="shield-check" class="w-4 h-4 text-green-400"></i>
-                    Price guarantee
+                    {{ __('messages.price_guarantee') }}
                 </div>
             </div>
 
@@ -138,18 +138,18 @@
             @if(isset($flight['fare_breakdown']))
             <div class="glass rounded-2xl p-6">
                 <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
-                    <i data-lucide="receipt" class="w-4 h-4 text-primary-400"></i> Fare Breakdown
+                    <i data-lucide="receipt" class="w-4 h-4 text-primary-400"></i> {{ __('messages.fare_breakdown') }}
                 </h3>
                 <div class="space-y-3">
                     @foreach($flight['fare_breakdown'] as $key => $value)
                     <div class="flex items-center justify-between">
                         <span class="text-sm text-gray-400 capitalize">{{ str_replace('_', ' ', $key) }}</span>
-                        <span class="text-sm text-white font-medium">${{ number_format($value, 2) }}</span>
+                        <span class="text-sm text-white font-medium">{{ \App\Helpers\CurrencyHelper::format($value) }}</span>
                     </div>
                     @endforeach
                     <div class="border-t border-white/10 pt-3 flex items-center justify-between">
-                        <span class="text-sm font-semibold text-white">Total</span>
-                        <span class="text-lg font-bold text-white">${{ number_format($flight['price']) }}</span>
+                        <span class="text-sm font-semibold text-white">{{ __('messages.total') }}</span>
+                        <span class="text-lg font-bold text-white">{{ \App\Helpers\CurrencyHelper::format($flight['price']) }}</span>
                     </div>
                 </div>
             </div>
@@ -158,24 +158,24 @@
             <!-- Quick Info -->
             <div class="glass rounded-2xl p-6">
                 <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
-                    <i data-lucide="zap" class="w-4 h-4 text-primary-400"></i> Quick Info
+                    <i data-lucide="zap" class="w-4 h-4 text-primary-400"></i> {{ __('messages.quick_info') }}
                 </h3>
                 <ul class="space-y-3">
                     <li class="flex items-center gap-2 text-sm text-gray-400">
                         <i data-lucide="clock" class="w-4 h-4 text-gray-500"></i>
-                        Duration: {{ $flight['duration'] }}
+                        {{ __('messages.duration') }}: {{ $flight['duration'] }}
                     </li>
                     <li class="flex items-center gap-2 text-sm text-gray-400">
                         <i data-lucide="plane" class="w-4 h-4 text-gray-500"></i>
-                        Aircraft: {{ $flight['aircraft'] ?? 'N/A' }}
+                        {{ __('messages.aircraft') }}: {{ $flight['aircraft'] ?? 'N/A' }}
                     </li>
                     <li class="flex items-center gap-2 text-sm text-gray-400">
                         <i data-lucide="armchair" class="w-4 h-4 text-gray-500"></i>
-                        Class: {{ $flight['cabin_class'] }}
+                        {{ __('messages.class') }}: {{ $flight['cabin_class'] }}
                     </li>
                     <li class="flex items-center gap-2 text-sm {{ $flight['stops'] == 0 ? 'text-green-400' : 'text-yellow-400' }}">
                         <i data-lucide="git-branch" class="w-4 h-4"></i>
-                        {{ $flight['stops'] == 0 ? 'Direct flight' : $flight['stops'] . ' stop(s)' }}
+                        {{ $flight['stops'] == 0 ? __('messages.direct') : $flight['stops'] . ' ' . __('messages.stops') }}
                     </li>
                 </ul>
             </div>

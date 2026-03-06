@@ -33,10 +33,10 @@
             <div class="glass rounded-2xl p-2 max-w-3xl mx-auto">
                 <div class="flex gap-1 mb-4">
                     <button id="tab-hotels" onclick="switchTab('hotels')" class="flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-xl text-sm font-semibold transition-all bg-primary-600 text-white shadow-lg shadow-primary-600/25">
-                        <i data-lucide="building-2" class="w-4 h-4"></i> Hotels
+                        <i data-lucide="building-2" class="w-4 h-4"></i> {{ __('messages.hotels') }}
                     </button>
                     <button id="tab-flights" onclick="switchTab('flights')" class="flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-xl text-sm font-semibold transition-all text-gray-400 hover:text-white hover:bg-white/5">
-                        <i data-lucide="plane" class="w-4 h-4"></i> Flights
+                        <i data-lucide="plane" class="w-4 h-4"></i> {{ __('messages.flights') }}
                     </button>
                 </div>
 
@@ -44,21 +44,21 @@
                 <form id="form-hotels" action="{{ route('hotels.search') }}" method="GET" class="p-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                         <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">Destination</label>
+                            <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">{{ __('messages.destination') }}</label>
                             <div class="relative">
                                 <i data-lucide="map-pin" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
-                                <input type="text" name="city" placeholder="Tokyo, Singapore..." class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:outline-none input-glow focus:border-primary-500/50 transition-all">
+                                <input type="text" name="city" placeholder="{{ __('messages.city_name_placeholder') }}" class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:outline-none input-glow focus:border-primary-500/50 transition-all">
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">Check-in</label>
+                            <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">{{ __('messages.check_in') }}</label>
                             <div class="relative">
                                 <i data-lucide="calendar" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
                                 <input type="date" name="check_in" class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white focus:outline-none input-glow focus:border-primary-500/50 transition-all">
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">Check-out</label>
+                            <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">{{ __('messages.check_out') }}</label>
                             <div class="relative">
                                 <i data-lucide="calendar" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
                                 <input type="date" name="check_out" class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white focus:outline-none input-glow focus:border-primary-500/50 transition-all">
@@ -66,7 +66,7 @@
                         </div>
                         <div class="flex items-end">
                             <button type="submit" class="w-full py-3 px-6 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary-600/25 hover:shadow-primary-500/40 flex items-center justify-center gap-2">
-                                <i data-lucide="search" class="w-4 h-4"></i> Search
+                                <i data-lucide="search" class="w-4 h-4"></i> {{ __('messages.search') }}
                             </button>
                         </div>
                     </div>
@@ -76,21 +76,21 @@
                 <form id="form-flights" action="{{ route('flights.search') }}" method="GET" class="p-4 hidden">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                         <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">From</label>
+                            <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">{{ __('messages.from') }}</label>
                             <div class="relative">
                                 <i data-lucide="plane-takeoff" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
-                                <input type="text" name="origin" placeholder="NRT, Tokyo..." class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:outline-none input-glow focus:border-primary-500/50 transition-all">
+                                <input type="text" name="origin" placeholder="{{ __('messages.origin_placeholder') }}" class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:outline-none input-glow focus:border-primary-500/50 transition-all">
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">To</label>
+                            <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">{{ __('messages.to') }}</label>
                             <div class="relative">
                                 <i data-lucide="plane-landing" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
-                                <input type="text" name="destination" placeholder="SIN, Singapore..." class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:outline-none input-glow focus:border-primary-500/50 transition-all">
+                                <input type="text" name="destination" placeholder="{{ __('messages.destination_placeholder') }}" class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:outline-none input-glow focus:border-primary-500/50 transition-all">
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">Departure</label>
+                            <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">{{ __('messages.departure_date') }}</label>
                             <div class="relative">
                                 <i data-lucide="calendar" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
                                 <input type="date" name="departure_date" class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white focus:outline-none input-glow focus:border-primary-500/50 transition-all">
@@ -98,7 +98,7 @@
                         </div>
                         <div class="flex items-end">
                             <button type="submit" class="w-full py-3 px-6 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary-600/25 hover:shadow-primary-500/40 flex items-center justify-center gap-2">
-                                <i data-lucide="search" class="w-4 h-4"></i> Search
+                                <i data-lucide="search" class="w-4 h-4"></i> {{ __('messages.search') }}
                             </button>
                         </div>
                     </div>
@@ -145,11 +145,11 @@
         <section>
             <div class="flex items-center justify-between mb-10">
                 <div>
-                    <h2 class="text-2xl sm:text-3xl font-bold text-white">Featured Hotels</h2>
-                    <p class="text-gray-400 mt-1">Top-rated accommodations from Trip.com</p>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white">{{ __('messages.hotels') }}</h2>
+                    <p class="text-gray-400 mt-1">{{ __('messages.top_rated_hotels') }}</p>
                 </div>
                 <a href="{{ route('hotels.search') }}" class="hidden sm:flex items-center gap-2 text-sm font-medium text-primary-400 hover:text-primary-300 transition-colors">
-                    View all <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    {{ __('messages.view_all') }} <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </a>
             </div>
 
@@ -187,11 +187,11 @@
                         <div class="flex items-end justify-between pt-3 border-t border-white/5">
                             <div>
                                 @if(isset($hotel['original_price']))
-                                <span class="text-xs text-gray-500 line-through">${{ number_format($hotel['original_price']) }}</span>
+                                <span class="text-xs text-gray-500 line-through">{{ \App\Helpers\CurrencyHelper::format($hotel['original_price']) }}</span>
                                 @endif
-                                <div class="text-xl font-bold text-white">${{ number_format($hotel['price_per_night']) }}<span class="text-xs font-normal text-gray-400">/night</span></div>
+                                <div class="text-xl font-bold text-white">{{ \App\Helpers\CurrencyHelper::format($hotel['price_per_night']) }}<span class="text-xs font-normal text-gray-400">/{{ __('messages.per_night') }}</span></div>
                             </div>
-                            <span class="text-xs text-gray-500">{{ number_format($hotel['review_count'] ?? 0) }} reviews</span>
+                            <span class="text-xs text-gray-500">{{ number_format($hotel['review_count'] ?? 0) }} {{ __('messages.guest_reviews') }}</span>
                         </div>
                     </div>
                 </a>
@@ -230,11 +230,11 @@
         <section>
             <div class="flex items-center justify-between mb-10">
                 <div>
-                    <h2 class="text-2xl sm:text-3xl font-bold text-white">Popular Flights</h2>
-                    <p class="text-gray-400 mt-1">Best deals on popular routes</p>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white">{{ __('messages.flights') }}</h2>
+                    <p class="text-gray-400 mt-1">{{ __('messages.best_flight_deals') }}</p>
                 </div>
                 <a href="{{ route('flights.search') }}" class="hidden sm:flex items-center gap-2 text-sm font-medium text-primary-400 hover:text-primary-300 transition-colors">
-                    View all <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    {{ __('messages.view_all') }} <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </a>
             </div>
 
@@ -262,15 +262,15 @@
                     </div>
                     <div class="flex items-center justify-between pt-3 border-t border-white/5">
                         <div class="flex items-center gap-2">
-                            <span class="text-xs text-gray-500">{{ $flight['stops'] == 0 ? 'Direct' : $flight['stops'] . ' stop(s)' }}</span>
+                            <span class="text-xs text-gray-500">{{ $flight['stops'] == 0 ? __('messages.direct') : $flight['stops'] . ' ' . __('messages.stops') }}</span>
                             <span class="w-1 h-1 rounded-full bg-gray-600"></span>
                             <span class="text-xs text-gray-500">{{ $flight['cabin_class'] }}</span>
                         </div>
                         <div>
                             @if(isset($flight['original_price']))
-                            <span class="text-xs text-gray-500 line-through mr-1">${{ number_format($flight['original_price']) }}</span>
+                            <span class="text-xs text-gray-500 line-through mr-1">{{ \App\Helpers\CurrencyHelper::format($flight['original_price']) }}</span>
                             @endif
-                            <span class="text-lg font-bold text-white">${{ number_format($flight['price']) }}</span>
+                            <span class="text-lg font-bold text-white">{{ \App\Helpers\CurrencyHelper::format($flight['price']) }}</span>
                         </div>
                     </div>
                 </a>

@@ -232,15 +232,45 @@
 
                 <!-- Nav Links -->
                 <div class="hidden md:flex items-center gap-1">
-                    <a href="{{ route('home') }}" class="px-4 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all {{ request()->routeIs('home') ? 'text-white bg-white/5' : '' }}">
-                        <span class="flex items-center gap-2"><i data-lucide="home" class="w-4 h-4"></i> Home</span>
+                    <a href="{{ route('home') }}" class="px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all {{ request()->routeIs('home') ? 'text-white bg-white/5' : '' }}">
+                        <span class="flex items-center gap-2"><i data-lucide="home" class="w-4 h-4"></i> {{ __('messages.home') }}</span>
                     </a>
-                    <a href="{{ route('hotels.search') }}" class="px-4 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all {{ request()->routeIs('hotels.*') ? 'text-white bg-white/5' : '' }}">
-                        <span class="flex items-center gap-2"><i data-lucide="building-2" class="w-4 h-4"></i> Hotels</span>
+                    <a href="{{ route('hotels.search') }}" class="px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all {{ request()->routeIs('hotels.*') ? 'text-white bg-white/5' : '' }}">
+                        <span class="flex items-center gap-2"><i data-lucide="building-2" class="w-4 h-4"></i> {{ __('messages.hotels') }}</span>
                     </a>
-                    <a href="{{ route('flights.search') }}" class="px-4 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all {{ request()->routeIs('flights.*') ? 'text-white bg-white/5' : '' }}">
-                        <span class="flex items-center gap-2"><i data-lucide="plane" class="w-4 h-4"></i> Flights</span>
+                    <a href="{{ route('flights.search') }}" class="px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all {{ request()->routeIs('flights.*') ? 'text-white bg-white/5' : '' }}">
+                        <span class="flex items-center gap-2"><i data-lucide="plane" class="w-4 h-4"></i> {{ __('messages.flights') }}</span>
                     </a>
+
+                    <div class="h-6 w-px bg-white/10 mx-2"></div>
+
+                    <!-- Language Dropdown -->
+                    <div class="relative group">
+                        <button class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all">
+                            <i data-lucide="languages" class="w-4 h-4"></i>
+                            <span class="uppercase">{{ app()->getLocale() }}</span>
+                            <i data-lucide="chevron-down" class="w-3 h-3 opacity-50"></i>
+                        </button>
+                        <div class="absolute right-0 mt-1 w-32 glass rounded-xl overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right scale-95 group-hover:scale-100 shadow-xl border border-white/10">
+                            <a href="{{ route('locale.language', 'en') }}" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/10 {{ app()->getLocale() == 'en' ? 'bg-primary-500/10 text-primary-400' : '' }}">English</a>
+                            <a href="{{ route('locale.language', 'es') }}" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/10 {{ app()->getLocale() == 'es' ? 'bg-primary-500/10 text-primary-400' : '' }}">Español</a>
+                            <a href="{{ route('locale.language', 'ja') }}" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/10 {{ app()->getLocale() == 'ja' ? 'bg-primary-500/10 text-primary-400' : '' }}">日本語</a>
+                        </div>
+                    </div>
+
+                    <!-- Currency Dropdown -->
+                    <div class="relative group">
+                        <button class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all">
+                            <i data-lucide="coins" class="w-4 h-4"></i>
+                            <span class="uppercase">{{ session('currency', 'USD') }}</span>
+                            <i data-lucide="chevron-down" class="w-3 h-3 opacity-50"></i>
+                        </button>
+                        <div class="absolute right-0 mt-1 w-24 glass rounded-xl overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right scale-95 group-hover:scale-100 shadow-xl border border-white/10">
+                            <a href="{{ route('locale.currency', 'USD') }}" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/10 {{ session('currency', 'USD') == 'USD' ? 'bg-primary-500/10 text-primary-400' : '' }}">USD</a>
+                            <a href="{{ route('locale.currency', 'EUR') }}" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/10 {{ session('currency', 'USD') == 'EUR' ? 'bg-primary-500/10 text-primary-400' : '' }}">EUR</a>
+                            <a href="{{ route('locale.currency', 'JPY') }}" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/10 {{ session('currency', 'USD') == 'JPY' ? 'bg-primary-500/10 text-primary-400' : '' }}">JPY</a>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Mobile menu button -->
@@ -253,9 +283,25 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden border-t border-white/5 bg-dark-950/95">
             <div class="px-4 py-3 space-y-1">
-                <a href="{{ route('home') }}" class="block px-4 py-2.5 rounded-xl text-sm text-gray-300 hover:text-white hover:bg-white/5">Home</a>
-                <a href="{{ route('hotels.search') }}" class="block px-4 py-2.5 rounded-xl text-sm text-gray-300 hover:text-white hover:bg-white/5">Hotels</a>
-                <a href="{{ route('flights.search') }}" class="block px-4 py-2.5 rounded-xl text-sm text-gray-300 hover:text-white hover:bg-white/5">Flights</a>
+                <a href="{{ route('home') }}" class="block px-4 py-2.5 rounded-xl text-sm text-gray-300 hover:text-white hover:bg-white/5">{{ __('messages.home') }}</a>
+                <a href="{{ route('hotels.search') }}" class="block px-4 py-2.5 rounded-xl text-sm text-gray-300 hover:text-white hover:bg-white/5">{{ __('messages.hotels') }}</a>
+                <a href="{{ route('flights.search') }}" class="block px-4 py-2.5 rounded-xl text-sm text-gray-300 hover:text-white hover:bg-white/5">{{ __('messages.flights') }}</a>
+
+                <div class="border-t border-white/10 my-2"></div>
+
+                <div class="grid grid-cols-2 gap-2 text-center text-sm">
+                    <a href="{{ route('locale.language', 'en') }}" class="py-2.5 rounded-xl text-gray-300 hover:bg-white/5 {{ app()->getLocale() == 'en' ? 'bg-primary-500/10 text-primary-400' : '' }}">English</a>
+                    <a href="{{ route('locale.language', 'es') }}" class="py-2.5 rounded-xl text-gray-300 hover:bg-white/5 {{ app()->getLocale() == 'es' ? 'bg-primary-500/10 text-primary-400' : '' }}">Español</a>
+                    <a href="{{ route('locale.language', 'ja') }}" class="py-2.5 rounded-xl text-gray-300 hover:bg-white/5 {{ app()->getLocale() == 'ja' ? 'bg-primary-500/10 text-primary-400' : '' }}">日本語</a>
+                </div>
+
+                <div class="border-t border-white/10 my-2"></div>
+
+                <div class="grid grid-cols-3 gap-2 text-center text-sm">
+                    <a href="{{ route('locale.currency', 'USD') }}" class="py-2.5 rounded-xl text-gray-300 hover:bg-white/5 {{ session('currency', 'USD') == 'USD' ? 'bg-primary-500/10 text-primary-400' : '' }}">USD</a>
+                    <a href="{{ route('locale.currency', 'EUR') }}" class="py-2.5 rounded-xl text-gray-300 hover:bg-white/5 {{ session('currency', 'USD') == 'EUR' ? 'bg-primary-500/10 text-primary-400' : '' }}">EUR</a>
+                    <a href="{{ route('locale.currency', 'JPY') }}" class="py-2.5 rounded-xl text-gray-300 hover:bg-white/5 {{ session('currency', 'USD') == 'JPY' ? 'bg-primary-500/10 text-primary-400' : '' }}">JPY</a>
+                </div>
             </div>
         </div>
     </nav>
@@ -291,14 +337,14 @@
                     </div>
                 </div>
                 <div>
-                    <h3 class="text-sm font-semibold text-white mb-4">Explore</h3>
+                    <h3 class="text-sm font-semibold text-white mb-4">{{ __('messages.explore') }}</h3>
                     <ul class="space-y-2.5">
-                        <li><a href="{{ route('hotels.search') }}" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">Search Hotels</a></li>
-                        <li><a href="{{ route('flights.search') }}" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">Search Flights</a></li>
+                        <li><a href="{{ route('hotels.search') }}" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">{{ __('messages.search_hotels') }}</a></li>
+                        <li><a href="{{ route('flights.search') }}" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">{{ __('messages.search_flights') }}</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h3 class="text-sm font-semibold text-white mb-4">Integration</h3>
+                    <h3 class="text-sm font-semibold text-white mb-4">{{ __('messages.integration') }}</h3>
                     <ul class="space-y-2.5">
                         <li><a href="https://www.trip.com/openplatform/" target="_blank" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">Trip.com Open Platform</a></li>
                         <li><a href="https://laravel.com/docs" target="_blank" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">Laravel Docs</a></li>

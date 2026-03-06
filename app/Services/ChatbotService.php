@@ -45,6 +45,11 @@ class ChatbotService
     {
         $maxRetries = 3;
 
+        $locale = app()->getLocale();
+        $languageNames = ['en' => 'English', 'es' => 'Spanish', 'ja' => 'Japanese'];
+        $langName = $languageNames[$locale] ?? 'English';
+        $currency = session('currency', 'USD');
+
         // Build conversation contents
         $contents = [];
 
@@ -118,7 +123,7 @@ class ChatbotService
                 try {
                     $response = Http::timeout(20)->post($url, [
                         'system_instruction' => [
-                            'parts' => [['text' => $this->systemPrompt . " You are a helpful travel assistant. When you use tools to get data, present the data beautifully using markdown formatting (e.g. bolding names, using bullet points)."]],
+                            'parts' => [['text' => $this->systemPrompt . " You are a helpful travel assistant. IMPORTANT: The user's preferred language is {$langName}. You MUST respond entirely in {$langName}. Their preferred currency is {$currency}. The tool results already have prices formatted in {$currency}. Present the data beautifully using markdown formatting (e.g. bolding names, using bullet points)."]],
                         ],
                         'contents' => $contents,
                         'tools' => $tools,
@@ -196,11 +201,23 @@ class ChatbotService
                     try {
                         if ($name === 'search_hotels') {
                             $functionResult = $this->tripComApi->searchHotels(['city' => $args['city'] ?? '']);
+                            if (is_array($functionResult)) {
+                                foreach ($functionResult as &$item) {
+                                    if (isset($item['price_per_night'])) $item['price_per_night'] = \App\Helpers\CurrencyHelper::format($item['price_per_night']);
+                                    if (isset($item['original_price'])) $item['original_price'] = \App\Helpers\CurrencyHelper::format($item['original_price']);
+                                }
+                            }
                         } elseif ($name === 'search_flights') {
                             $functionResult = $this->tripComApi->searchFlights([
                                 'origin' => $args['origin'] ?? '',
                                 'destination' => $args['destination'] ?? ''
                             ]);
+                            if (is_array($functionResult)) {
+                                foreach ($functionResult as &$item) {
+                                    if (isset($item['price'])) $item['price'] = \App\Helpers\CurrencyHelper::format($item['price']);
+                                    if (isset($item['original_price'])) $item['original_price'] = \App\Helpers\CurrencyHelper::format($item['original_price']);
+                                }
+                            }
                         } else {
                             $functionResult = ['error' => 'Unknown function'];
                         }

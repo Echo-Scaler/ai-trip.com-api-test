@@ -9,33 +9,33 @@
     <div class="glass rounded-2xl p-6 mb-8">
         <form action="{{ route('flights.search') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
             <div>
-                <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">From</label>
+                <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">{{ __('messages.from') }}</label>
                 <div class="relative">
                     <i data-lucide="plane-takeoff" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
-                    <input type="text" name="origin" value="{{ $params['origin'] ?? '' }}" placeholder="NRT, Tokyo..." class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:outline-none input-glow focus:border-primary-500/50 transition-all">
+                    <input type="text" name="origin" value="{{ $params['origin'] ?? '' }}" placeholder="{{ __('messages.origin_placeholder') }}" class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:outline-none input-glow focus:border-primary-500/50 transition-all">
                 </div>
             </div>
             <div>
-                <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">To</label>
+                <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">{{ __('messages.to') }}</label>
                 <div class="relative">
                     <i data-lucide="plane-landing" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
-                    <input type="text" name="destination" value="{{ $params['destination'] ?? '' }}" placeholder="SIN, Singapore..." class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:outline-none input-glow focus:border-primary-500/50 transition-all">
+                    <input type="text" name="destination" value="{{ $params['destination'] ?? '' }}" placeholder="{{ __('messages.destination_placeholder') }}" class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:outline-none input-glow focus:border-primary-500/50 transition-all">
                 </div>
             </div>
             <div>
-                <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">Departure Date</label>
+                <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">{{ __('messages.departure_date') }}</label>
                 <input type="date" name="departure_date" value="{{ $params['departure_date'] ?? '' }}" class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:outline-none input-glow focus:border-primary-500/50 transition-all">
             </div>
             <div>
-                <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">Passengers</label>
+                <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">{{ __('messages.passengers') }}</label>
                 <select name="passengers" class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:outline-none input-glow focus:border-primary-500/50 transition-all appearance-none">
                     @for($i = 1; $i <= 9; $i++)
-                        <option value="{{ $i }}" {{ ($params['passengers'] ?? 1) == $i ? 'selected' : '' }} class="bg-dark-900">{{ $i }} Passenger{{ $i > 1 ? 's' : '' }}</option>
+                        <option value="{{ $i }}" {{ ($params['passengers'] ?? 1) == $i ? 'selected' : '' }} class="bg-dark-900">{{ $i }} {{ __('messages.passenger') }}{{ $i > 1 ? 's' : '' }}</option>
                         @endfor
                 </select>
             </div>
             <button type="submit" class="py-3 px-6 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary-600/25 flex items-center justify-center gap-2">
-                <i data-lucide="search" class="w-4 h-4"></i> Search
+                <i data-lucide="search" class="w-4 h-4"></i> {{ __('messages.search') }}
             </button>
         </form>
     </div>
@@ -45,26 +45,26 @@
         <div>
             <h1 class="text-2xl font-bold text-white">
                 @if(!empty($params['origin']) && !empty($params['destination']))
-                Flights from {{ $params['origin'] }} to {{ $params['destination'] }}
+                {{ __('messages.flights_from_to', ['origin' => $params['origin'], 'destination' => $params['destination']]) }}
                 @elseif(!empty($params['origin']))
-                Flights from {{ $params['origin'] }}
+                {{ __('messages.flights_from', ['origin' => $params['origin']]) }}
                 @elseif(!empty($params['destination']))
-                Flights to {{ $params['destination'] }}
+                {{ __('messages.flights_to', ['destination' => $params['destination']]) }}
                 @else
-                All Flights
+                {{ __('messages.all_flights') }}
                 @endif
             </h1>
-            <p class="text-sm text-gray-400 mt-1">{{ count($flights) }} {{ Str::plural('result', count($flights)) }} found</p>
+            <p class="text-sm text-gray-400 mt-1">{{ count($flights) }} {{ __('messages.results_found') }}</p>
         </div>
     </div>
 
     @if(count($flights) === 0)
     <div class="glass rounded-2xl p-12 text-center">
         <i data-lucide="search-x" class="w-12 h-12 text-gray-500 mx-auto mb-4"></i>
-        <h3 class="text-lg font-semibold text-white mb-2">No flights found</h3>
-        <p class="text-gray-400 text-sm">Try adjusting your search criteria or search for a different route.</p>
+        <h3 class="text-lg font-semibold text-white mb-2">{{ __('messages.no_flights_found') }}</h3>
+        <p class="text-gray-400 text-sm">{{ __('messages.try_adjusting_flights') }}</p>
         <a href="{{ route('flights.search') }}" class="inline-flex items-center gap-2 mt-6 px-6 py-2.5 bg-primary-600/20 text-primary-400 rounded-xl text-sm font-medium hover:bg-primary-600/30 transition-colors">
-            <i data-lucide="refresh-cw" class="w-4 h-4"></i> Clear Search
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i> {{ __('messages.clear_search') }}
         </a>
     </div>
     @else
@@ -104,7 +104,7 @@
                             <div class="w-2 h-2 rounded-full bg-primary-500"></div>
                         </div>
                         <div class="text-xs {{ $flight['stops'] == 0 ? 'text-green-400' : 'text-yellow-400' }}">
-                            {{ $flight['stops'] == 0 ? 'Direct' : $flight['stops'] . ' stop(s)' }}
+                            {{ $flight['stops'] == 0 ? __('messages.direct') : $flight['stops'] . ' ' . __('messages.stops') }}
                         </div>
                     </div>
 
@@ -119,13 +119,13 @@
                 <div class="lg:w-44 flex-shrink-0 text-right flex lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-2">
                     <div>
                         @if(isset($flight['original_price']))
-                        <div class="text-xs text-gray-500 line-through">${{ number_format($flight['original_price']) }}</div>
+                        <div class="text-xs text-gray-500 line-through">{{ \App\Helpers\CurrencyHelper::format($flight['original_price']) }}</div>
                         @endif
-                        <div class="text-2xl font-bold text-white">${{ number_format($flight['price']) }}</div>
+                        <div class="text-2xl font-bold text-white">{{ \App\Helpers\CurrencyHelper::format($flight['price']) }}</div>
                         <div class="text-xs text-gray-500">{{ $flight['cabin_class'] }}</div>
                     </div>
                     <span class="px-5 py-2 bg-gradient-to-r from-primary-600 to-primary-500 text-white text-sm font-semibold rounded-xl group-hover:from-primary-500 group-hover:to-primary-400 transition-all">
-                        View Deal
+                        {{ __('messages.view_deal') }}
                     </span>
                 </div>
             </div>
@@ -139,7 +139,7 @@
                 <span class="flex items-center gap-1"><i data-lucide="luggage" class="w-3 h-3"></i> {{ $flight['baggage'] }}</span>
                 @endif
                 @if(isset($flight['original_price']) && $flight['original_price'] > $flight['price'])
-                <span class="flex items-center gap-1 text-green-400"><i data-lucide="tag" class="w-3 h-3"></i> Save ${{ number_format($flight['original_price'] - $flight['price']) }}</span>
+                <span class="flex items-center gap-1 text-green-400"><i data-lucide="tag" class="w-3 h-3"></i> {{ __('messages.save') }} {{ \App\Helpers\CurrencyHelper::format($flight['original_price'] - $flight['price']) }}</span>
                 @endif
             </div>
         </a>

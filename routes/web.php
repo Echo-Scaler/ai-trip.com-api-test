@@ -5,8 +5,13 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\FlightController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HotelController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
+
+// Localization & Currency Switchers
+Route::get('/locale/language/{locale}', [LocaleController::class, 'setLanguage'])->name('locale.language');
+Route::get('/locale/currency/{currency}', [LocaleController::class, 'setCurrency'])->name('locale.currency');
 
 // Home
 Route::get('/', [HomeController::class, 'index'])->name('home');
