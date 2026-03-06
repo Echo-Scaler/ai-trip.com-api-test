@@ -108,6 +108,30 @@
     </div>
 </section>
 
+<!-- Promotional Ad Banner -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-8">
+    <a href="#" class="block relative glass rounded-2xl overflow-hidden card-hover shine-effect group">
+        <div class="absolute inset-0">
+            <img src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1200&q=80" alt="Car Rental Ad" class="w-full h-full object-cover opacity-40 group-hover:opacity-50 transition-opacity duration-500">
+            <div class="absolute inset-0 bg-gradient-to-r from-dark-950/90 via-dark-950/70 to-transparent"></div>
+        </div>
+        <div class="relative p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div class="flex-1">
+                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 text-gray-300 text-[10px] font-bold uppercase tracking-wider mb-4 border border-white/10 backdrop-blur-md">
+                    <i data-lucide="megaphone" class="w-3 h-3 text-primary-400"></i> Sponsored
+                </div>
+                <h3 class="text-2xl sm:text-3xl font-black text-white mb-2 group-hover:text-primary-400 transition-colors">Hit the Road in Style</h3>
+                <p class="text-sm text-gray-400 max-w-lg">Unlock up to 30% off premium car rentals worldwide. Book your dream ride today and explore without limits.</p>
+            </div>
+            <div class="shrink-0 w-full sm:w-auto">
+                <div class="px-6 py-3 bg-white text-dark-950 font-bold rounded-xl text-center flex items-center justify-center gap-2 group-hover:bg-gradient-to-r group-hover:from-primary-600 group-hover:to-primary-500 group-hover:text-white transition-all shadow-lg shadow-white/10 group-hover:shadow-primary-500/25">
+                    Claim Offer <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </div>
+            </div>
+        </div>
+    </a>
+</section>
+
 <!-- Featured Hotels -->
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
     <div class="flex items-center justify-between mb-10">
@@ -164,6 +188,30 @@
         </a>
         @endforeach
     </div>
+</section>
+
+<!-- Promotional Ad Banner 2 -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+    <a href="#" class="block relative glass rounded-2xl overflow-hidden card-hover shine-effect group">
+        <div class="absolute inset-0">
+            <img src="https://images.unsplash.com/photo-1518104593124-ac2e82a5eb9b?w=1200&q=80" alt="Travel Insurance Ad" class="w-full h-full object-cover opacity-40 group-hover:opacity-50 transition-opacity duration-500">
+            <div class="absolute inset-0 bg-gradient-to-r from-dark-950/90 via-dark-950/70 to-transparent"></div>
+        </div>
+        <div class="relative p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div class="flex-1">
+                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 text-gray-300 text-[10px] font-bold uppercase tracking-wider mb-4 border border-white/10 backdrop-blur-md">
+                    <i data-lucide="shield-check" class="w-3 h-3 text-red-400"></i> Sponsored
+                </div>
+                <h3 class="text-2xl sm:text-3xl font-black text-white mb-2 group-hover:text-red-400 transition-colors">Travel Worry-Free</h3>
+                <p class="text-sm text-gray-400 max-w-lg">Get comprehensive travel insurance starting at just $5/day. Protect your trip globally against cancellations, medical emergencies, and lost baggage.</p>
+            </div>
+            <div class="shrink-0 w-full sm:w-auto">
+                <div class="px-6 py-3 bg-white text-dark-950 font-bold rounded-xl text-center flex items-center justify-center gap-2 group-hover:bg-gradient-to-r group-hover:from-red-600 group-hover:to-red-500 group-hover:text-white transition-all shadow-lg shadow-white/10 group-hover:shadow-red-500/25">
+                    View Plans <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </div>
+            </div>
+        </div>
+    </a>
 </section>
 
 <!-- Featured Flights -->
@@ -297,6 +345,32 @@
             </div>
         </div>
     </div>
+</section>
+
+<!-- Promotional Ad Banner 3 -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+    <a href="#" class="block relative glass rounded-2xl overflow-hidden card-hover shine-effect group">
+        <div class="absolute inset-0">
+            <img src="https://images.unsplash.com/photo-1520694478166-da20fd58ee42?w=1200&q=80" alt="Global eSIM Ad" class="w-full h-full object-cover opacity-40 group-hover:opacity-50 transition-opacity duration-500">
+            <div class="absolute inset-0 bg-gradient-to-l from-dark-950/90 via-dark-950/70 to-transparent"></div>
+        </div>
+        <div class="relative p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div class="shrink-0 w-full sm:w-auto sm:order-2">
+                <div class="px-6 py-3 bg-white text-dark-950 font-bold rounded-xl text-center flex items-center justify-center gap-2 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-purple-500 group-hover:text-white transition-all shadow-lg shadow-white/10 group-hover:shadow-purple-500/25">
+                    Buy Data <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </div>
+            </div>
+            <div class="flex-1 sm:order-1 sm:text-right">
+                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 text-gray-300 text-[10px] font-bold uppercase tracking-wider mb-4 border border-white/10 backdrop-blur-md">
+                    <i data-lucide="wifi" class="w-3 h-3 text-purple-400"></i> Sponsored
+                </div>
+                <div class="flex flex-col sm:items-end w-full">
+                    <h3 class="text-2xl sm:text-3xl font-black text-white mb-2 group-hover:text-purple-400 transition-colors">Stay Connected Anywhere</h3>
+                    <p class="text-sm text-gray-400 max-w-lg">Instantly activate a Global eSIM on your phone. Enjoy high-speed 5G data in over 150+ countries with zero roaming fees.</p>
+                </div>
+            </div>
+        </div>
+    </a>
 </section>
 
 <!-- Trip Packages -->
