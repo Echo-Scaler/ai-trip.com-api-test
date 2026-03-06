@@ -218,36 +218,216 @@
     </div>
 </section>
 
-<!-- API Integration Info -->
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-    <div class="glass rounded-2xl p-8 md:p-12 text-center">
-        <div class="w-16 h-16 bg-gradient-to-br from-primary-500 to-accent-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-primary-500/25">
-            <i data-lucide="code-2" class="w-8 h-8 text-white"></i>
+<!-- Exclusive Coupons -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+    <div class="flex items-center justify-between mb-10">
+        <div>
+            <h2 class="text-2xl sm:text-3xl font-bold text-white">Exclusive Coupons</h2>
+            <p class="text-gray-400 mt-1">Grab these deals before they expire</p>
         </div>
-        <h2 class="text-2xl font-bold text-white mb-3">Real-World API Architecture</h2>
-        <p class="text-gray-400 max-w-2xl mx-auto mb-8">
-            This app demonstrates a production-ready Trip.com API integration pattern with Laravel.
-            Interface-based services, DTOs, and a swappable mock data layer.
-        </p>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
-            <div class="glass-light rounded-xl p-4">
-                <i data-lucide="layers" class="w-6 h-6 text-primary-400 mx-auto mb-2"></i>
-                <div class="text-sm font-semibold text-white">Service Layer</div>
-                <div class="text-xs text-gray-400 mt-1">Contract + Mock/Real</div>
+        <div class="hidden sm:flex items-center gap-2 text-sm font-medium text-primary-400">
+            <i data-lucide="timer" class="w-4 h-4"></i> Limited Time
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <!-- Coupon 1 -->
+        <div class="relative glass rounded-2xl overflow-hidden group">
+            <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500"></div>
+            <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-500/20 to-orange-500/20 flex items-center justify-center">
+                        <i data-lucide="tag" class="w-6 h-6 text-yellow-400"></i>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-3xl font-black text-white">20<span class="text-lg">%</span></div>
+                        <div class="text-xs text-yellow-400 font-bold uppercase">Off</div>
+                    </div>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-1">First Hotel Booking</h3>
+                <p class="text-sm text-gray-400 mb-4">Save 20% on your first hotel reservation. Valid for all destinations.</p>
+                <div class="flex items-center justify-between pt-4 border-t border-dashed border-white/10">
+                    <code class="px-3 py-1.5 rounded-lg bg-yellow-500/10 text-yellow-400 text-sm font-mono font-bold tracking-wider">FIRST20</code>
+                    <span class="text-xs text-gray-500">Expires Apr 30</span>
+                </div>
             </div>
-            <div class="glass-light rounded-xl p-4">
-                <i data-lucide="database" class="w-6 h-6 text-accent-400 mx-auto mb-2"></i>
-                <div class="text-sm font-semibold text-white">DTOs</div>
-                <div class="text-xs text-gray-400 mt-1">Type-safe data transfer</div>
+        </div>
+
+        <!-- Coupon 2 -->
+        <div class="relative glass rounded-2xl overflow-hidden group">
+            <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-400 via-primary-500 to-indigo-500"></div>
+            <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-primary-500/20 flex items-center justify-center">
+                        <i data-lucide="plane" class="w-6 h-6 text-blue-400"></i>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-3xl font-black text-white">$50</div>
+                        <div class="text-xs text-blue-400 font-bold uppercase">Off</div>
+                    </div>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-1">Flights Over $300</h3>
+                <p class="text-sm text-gray-400 mb-4">Get $50 off any flight booking over $300. All airlines included.</p>
+                <div class="flex items-center justify-between pt-4 border-t border-dashed border-white/10">
+                    <code class="px-3 py-1.5 rounded-lg bg-blue-500/10 text-blue-400 text-sm font-mono font-bold tracking-wider">FLY50NOW</code>
+                    <span class="text-xs text-gray-500">Expires May 15</span>
+                </div>
             </div>
-            <div class="glass-light rounded-xl p-4">
-                <i data-lucide="shield-check" class="w-6 h-6 text-green-400 mx-auto mb-2"></i>
-                <div class="text-sm font-semibold text-white">HMAC Auth</div>
-                <div class="text-xs text-gray-400 mt-1">Secure API signing</div>
+        </div>
+
+        <!-- Coupon 3 -->
+        <div class="relative glass rounded-2xl overflow-hidden group">
+            <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-green-400 via-emerald-500 to-teal-500"></div>
+            <div class="p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center">
+                        <i data-lucide="gift" class="w-6 h-6 text-green-400"></i>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-3xl font-black text-white">15<span class="text-lg">%</span></div>
+                        <div class="text-xs text-green-400 font-bold uppercase">Off</div>
+                    </div>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-1">Bundle & Save</h3>
+                <p class="text-sm text-gray-400 mb-4">Book hotel + flight together and save 15% on the total package.</p>
+                <div class="flex items-center justify-between pt-4 border-t border-dashed border-white/10">
+                    <code class="px-3 py-1.5 rounded-lg bg-green-500/10 text-green-400 text-sm font-mono font-bold tracking-wider">BUNDLE15</code>
+                    <span class="text-xs text-gray-500">Expires Jun 01</span>
+                </div>
             </div>
         </div>
     </div>
 </section>
+
+<!-- Trip Packages -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+    <div class="flex items-center justify-between mb-10">
+        <div>
+            <h2 class="text-2xl sm:text-3xl font-bold text-white">Curated Trip Packages</h2>
+            <p class="text-gray-400 mt-1">All-inclusive plans crafted by travel experts</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Package 1: Japan Explorer -->
+        <div class="relative glass rounded-2xl overflow-hidden card-hover shine-effect group">
+            <div class="absolute inset-0">
+                <img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&q=80" alt="Japan" class="w-full h-full object-cover opacity-30 group-hover:opacity-40 transition-opacity duration-500">
+                <div class="absolute inset-0 bg-gradient-to-r from-dark-950 via-dark-950/90 to-dark-950/60"></div>
+            </div>
+            <div class="relative p-8">
+                <div class="flex items-start justify-between mb-6">
+                    <div>
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold mb-3">
+                            <i data-lucide="flame" class="w-3 h-3"></i> Best Seller
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-1">Japan Explorer</h3>
+                        <p class="text-sm text-gray-400">7 Days · Tokyo → Kyoto → Osaka</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-gray-500 line-through">$2,899</div>
+                        <div class="text-3xl font-black text-white">$1,999</div>
+                        <div class="text-xs text-green-400 font-semibold">Save $900</div>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <span class="px-2.5 py-1 rounded-lg bg-white/5 text-xs text-gray-300 flex items-center gap-1"><i data-lucide="plane" class="w-3 h-3"></i> Round-trip</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-white/5 text-xs text-gray-300 flex items-center gap-1"><i data-lucide="building-2" class="w-3 h-3"></i> 4★ Hotels</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-white/5 text-xs text-gray-300 flex items-center gap-1"><i data-lucide="utensils" class="w-3 h-3"></i> Breakfast</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-white/5 text-xs text-gray-300 flex items-center gap-1"><i data-lucide="map" class="w-3 h-3"></i> Guided Tours</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-white/5 text-xs text-gray-300 flex items-center gap-1"><i data-lucide="train-front" class="w-3 h-3"></i> JR Pass</span>
+                </div>
+                <a href="{{ route('hotels.search', ['city' => 'Tokyo']) }}" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary-600/25 text-sm">
+                    View Package <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Package 2: Southeast Asia Circuit -->
+        <div class="relative glass rounded-2xl overflow-hidden card-hover shine-effect group">
+            <div class="absolute inset-0">
+                <img src="https://images.unsplash.com/photo-1506665531195-3566af2b4dfa?w=800&q=80" alt="Bali" class="w-full h-full object-cover opacity-30 group-hover:opacity-40 transition-opacity duration-500">
+                <div class="absolute inset-0 bg-gradient-to-r from-dark-950 via-dark-950/90 to-dark-950/60"></div>
+            </div>
+            <div class="relative p-8">
+                <div class="flex items-start justify-between mb-6">
+                    <div>
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-400 text-xs font-bold mb-3">
+                            <i data-lucide="sparkles" class="w-3 h-3"></i> New Package
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-1">Southeast Asia Circuit</h3>
+                        <p class="text-sm text-gray-400">10 Days · Singapore → Bangkok → Bali</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-gray-500 line-through">$3,499</div>
+                        <div class="text-3xl font-black text-white">$2,499</div>
+                        <div class="text-xs text-green-400 font-semibold">Save $1,000</div>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <span class="px-2.5 py-1 rounded-lg bg-white/5 text-xs text-gray-300 flex items-center gap-1"><i data-lucide="plane" class="w-3 h-3"></i> Multi-city</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-white/5 text-xs text-gray-300 flex items-center gap-1"><i data-lucide="building-2" class="w-3 h-3"></i> 5★ Resorts</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-white/5 text-xs text-gray-300 flex items-center gap-1"><i data-lucide="utensils" class="w-3 h-3"></i> Half Board</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-white/5 text-xs text-gray-300 flex items-center gap-1"><i data-lucide="waves" class="w-3 h-3"></i> Beach Access</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-white/5 text-xs text-gray-300 flex items-center gap-1"><i data-lucide="car" class="w-3 h-3"></i> Transfers</span>
+                </div>
+                <a href="{{ route('hotels.search', ['city' => 'Singapore']) }}" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary-600/25 text-sm">
+                    View Package <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Package 3: Korea Highlights -->
+        <div class="relative glass rounded-2xl overflow-hidden card-hover shine-effect group">
+            <div class="absolute inset-0">
+                <img src="https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=800&q=80" alt="Seoul" class="w-full h-full object-cover opacity-30 group-hover:opacity-40 transition-opacity duration-500">
+                <div class="absolute inset-0 bg-gradient-to-r from-dark-950 via-dark-950/90 to-dark-950/60"></div>
+            </div>
+            <div class="relative p-8">
+                <div class="flex items-start justify-between mb-6">
+                    <div>
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-bold mb-3">
+                            <i data-lucide="trending-up" class="w-3 h-3"></i> Trending
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-1">Korea Highlights</h3>
+                        <p class="text-sm text-gray-400">5 Days · Seoul → Busan</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-gray-500 line-through">$1,599</div>
+                        <div class="text-3xl font-black text-white">$1,199</div>
+                        <div class="text-xs text-green-400 font-semibold">Save $400</div>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <span class="px-2.5 py-1 rounded-lg bg-white/5 text-xs text-gray-300 flex items-center gap-1"><i data-lucide="plane" class="w-3 h-3"></i> Round-trip</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-white/5 text-xs text-gray-300 flex items-center gap-1"><i data-lucide="building-2" class="w-3 h-3"></i> Boutique Hotels</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-white/5 text-xs text-gray-300 flex items-center gap-1"><i data-lucide="utensils" class="w-3 h-3"></i> Food Tour</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-white/5 text-xs text-gray-300 flex items-center gap-1"><i data-lucide="train-front" class="w-3 h-3"></i> KTX Pass</span>
+                </div>
+                <a href="{{ route('hotels.search', ['city' => 'Seoul']) }}" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary-600/25 text-sm">
+                    View Package <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Newsletter / CTA -->
+        <div class="glass rounded-2xl p-8 flex flex-col justify-center">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center mb-5 shadow-lg shadow-primary-500/25">
+                <i data-lucide="bell-ring" class="w-7 h-7 text-white"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Get Exclusive Deals</h3>
+            <p class="text-sm text-gray-400 mb-6">Subscribe to receive personalized trip packages and flash sale alerts straight to your inbox.</p>
+            <div class="flex gap-2">
+                <input type="email" placeholder="your@email.com" class="flex-1 bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-sm text-white placeholder-gray-500 focus:outline-none input-glow focus:border-primary-500/50 transition-all">
+                <button class="px-5 py-3 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary-600/25 flex-shrink-0">
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <p class="text-xs text-gray-500 mt-3">No spam. Unsubscribe anytime.</p>
+        </div>
+    </div>
+</section>
+
 @endsection
 
 @section('scripts')
