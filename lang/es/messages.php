@@ -82,4 +82,9 @@ return [
     'quick_info' => 'Información rápida',
     'duration' => 'Duración',
     'aircraft' => 'Aeronave',
+    'map_view' => 'Vista de Mapa',
+    'grid_view' => 'Vista de Cuadrícula',
+    'location' => 'Ubicación',
+    'show_on_map' => 'Mostrar en el mapa',
+    'view_details' => 'Ver Detalles',
 ];

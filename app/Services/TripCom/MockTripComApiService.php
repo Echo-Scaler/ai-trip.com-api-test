@@ -25,11 +25,26 @@ class MockTripComApiService implements TripComApiContract
                 ['name' => 'Oasis Retreat', 'city' => 'Dubai', 'image' => 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&q=80'],
             ];
 
+            $cityCoords = [
+                'Tokyo' => ['lat' => 35.6762, 'lng' => 139.6503],
+                'Singapore' => ['lat' => 1.3521, 'lng' => 103.8198],
+                'Bangkok' => ['lat' => 13.7563, 'lng' => 100.5018],
+                'Hanoi' => ['lat' => 21.0285, 'lng' => 105.8542],
+                'Seoul' => ['lat' => 37.5665, 'lng' => 126.9780],
+                'Bali' => ['lat' => -8.4095, 'lng' => 115.1889],
+                'Phuket' => ['lat' => 7.8804, 'lng' => 98.3923],
+                'Hong Kong' => ['lat' => 22.3193, 'lng' => 114.1694],
+                'Taipei' => ['lat' => 25.0330, 'lng' => 121.5654],
+                'Dubai' => ['lat' => 25.2048, 'lng' => 55.2708],
+            ];
+
             $allHotels = [];
             $amenitiesPool = ['Free WiFi', 'Pool', 'Spa', 'Restaurant', 'Gym', 'Bar', 'Room Service', 'Airport Shuttle', 'Yoga Studio', 'Ocean View', 'Casino', 'Free Breakfast'];
 
             for ($i = 1; $i <= 40; $i++) {
                 $base = $baseHotels[array_rand($baseHotels)];
+                $coords = $cityCoords[$base['city']];
+
                 $price = rand(80, 500);
 
                 // Shuffle and pick 4-6 random amenities
@@ -50,8 +65,8 @@ class MockTripComApiService implements TripComApiContract
                     'image_url' => $base['image'],
                     'amenities' => $amenities,
                     'description' => 'A wonderful stay at ' . $base['name'] . ' located in ' . $base['city'] . '. Enjoy premium amenities and world-class service.',
-                    'latitude' => round(rand(-9000, 9000) / 100, 4),
-                    'longitude' => round(rand(-18000, 18000) / 100, 4),
+                    'latitude' => $coords['lat'] + (rand(-100, 100) / 1000), // Random offset within city
+                    'longitude' => $coords['lng'] + (rand(-100, 100) / 1000),
                     'review_count' => rand(50, 5000),
                 ];
             }

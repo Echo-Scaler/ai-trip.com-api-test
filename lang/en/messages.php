@@ -82,4 +82,9 @@ return [
     'quick_info' => 'Quick Info',
     'duration' => 'Duration',
     'aircraft' => 'Aircraft',
+    'map_view' => 'Map View',
+    'grid_view' => 'Grid View',
+    'location' => 'Location',
+    'show_on_map' => 'Show on Map',
+    'view_details' => 'View Details',
 ];

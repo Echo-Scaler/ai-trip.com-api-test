@@ -17,8 +17,8 @@ class HomeController extends Controller
     public function index()
     {
         // Get a few featured hotels and flights for the homepage
-        $featuredHotels = array_slice($this->tripComApi->searchHotels([]), 0, 3);
-        $featuredFlights = array_slice($this->tripComApi->searchFlights([]), 0, 3);
+        $featuredHotels = array_slice($this->tripComApi->searchHotels([])->items(), 0, 3);
+        $featuredFlights = array_slice($this->tripComApi->searchFlights([])->items(), 0, 3);
 
         return view('home', compact('featuredHotels', 'featuredFlights'));
     }

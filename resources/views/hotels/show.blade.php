@@ -4,6 +4,7 @@
 @section('meta_description', $hotel['description'])
 
 @section('content')
+@php $hotelData = $hotel; @endphp
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <!-- Breadcrumb -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -76,6 +77,17 @@
                     </div>
                     @endforeach
                 </div>
+            </div>
+
+            <!-- Map / Location -->
+            <div class="glass rounded-2xl p-6">
+                <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <i data-lucide="map" class="w-5 h-5 text-primary-400"></i> {{ __('messages.location') }}
+                </h2>
+                <div id="hotel-map" class="h-64 w-full rounded-xl overflow-hidden border border-white/10 z-0"></div>
+                <p class="text-sm text-gray-400 mt-3 flex items-center gap-2">
+                    <i data-lucide="map-pin" class="w-4 h-4 text-gray-500"></i> {{ $hotel['address'] }}, {{ $hotel['city'] }}
+                </p>
             </div>
 
             <!-- Room Options -->
@@ -289,8 +301,10 @@
     </div>
 </div>
 
+@section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // Star Rating Logic
         const stars = document.querySelectorAll('.star-select');
         const ratingInput = document.getElementById('rating-input');
 
@@ -312,7 +326,6 @@
                 });
             });
 
-            // Optional: Hover effects
             star.addEventListener('mouseenter', function() {
                 const val = parseInt(this.getAttribute('data-value'));
                 stars.forEach(s => {
@@ -327,6 +340,57 @@
                 stars.forEach(s => s.classList.remove('opacity-70'));
             });
         });
+
+        // Initialize Map
+        const hotel = @json($hotelData);
+        if (hotel && typeof hotel.latitude !== 'undefined' && typeof hotel.longitude !== 'undefined') {
+            const mapContainer = document.getElementById('hotel-map');
+            if (mapContainer) {
+                const map = L.map('hotel-map', {
+                    zoomControl: false
+                }).setView([hotel.latitude, hotel.longitude], 15);
+
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                    subdomains: 'abcd',
+                    maxZoom: 20
+                }).addTo(map);
+
+                L.control.zoom({
+                    position: 'bottomright'
+                }).addTo(map);
+
+                L.marker([hotel.latitude, hotel.longitude]).addTo(map)
+                    .bindPopup(`<div class="p-1 font-bold text-dark-950">${hotel.name}</div>`);
+
+                // Force a resize check after a tiny delay
+                setTimeout(() => {
+                    map.invalidateSize();
+                }, 100);
+            }
+        }
     });
 </script>
+
+<style>
+    /* Leaflet Dark Mode Customizations */
+    .leaflet-container {
+        background: #0a0816;
+    }
+
+    .leaflet-bar {
+        border: none !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .leaflet-bar a {
+        background-color: #1e1b2e !important;
+        color: #ffffff !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .leaflet-bar a:hover {
+        background-color: #2d2a3e !important;
+    }
+</style>
 @endsection
