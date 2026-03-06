@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\TripComApiContract;
+use App\Models\Review;
 use Illuminate\Http\Request;
 
 class HotelController extends Controller
@@ -43,6 +44,15 @@ class HotelController extends Controller
             abort(404, 'Hotel not found');
         }
 
-        return view('hotels.show', compact('hotel'));
+        // Fetch DB reviews for this hotel
+        $reviews = Review::where('hotel_id', $id)->latest()->get();
+
+        // Calculate dynamic rating and review counts based on DB if available, else fallback to API defaults
+        if ($reviews->isNotEmpty()) {
+            $hotel['rating'] = number_format($reviews->avg('rating'), 1);
+            $hotel['review_count'] = $reviews->count();
+        }
+
+        return view('hotels.show', compact('hotel', 'reviews'));
     }
 }

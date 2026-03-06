@@ -5,6 +5,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\FlightController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HotelController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 
 // Home
@@ -13,6 +14,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // Hotels
 Route::get('/hotels/search', [HotelController::class, 'search'])->name('hotels.search');
 Route::get('/hotels/{id}', [HotelController::class, 'show'])->name('hotels.show');
+Route::post('/hotels/{id}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 
 // Flights
 Route::get('/flights/search', [FlightController::class, 'search'])->name('flights.search');
