@@ -54,11 +54,11 @@
                 {{ __('messages.all_flights') }}
                 @endif
             </h1>
-            <p class="text-sm text-gray-400 mt-1">{{ count($flights) }} {{ __('messages.results_found') }}</p>
+            <p class="text-sm text-gray-400 mt-1">{{ $flights->total() }} {{ __('messages.results_found') }}</p>
         </div>
     </div>
 
-    @if(count($flights) === 0)
+    @if($flights->isEmpty())
     <div class="glass rounded-2xl p-12 text-center">
         <i data-lucide="search-x" class="w-12 h-12 text-gray-500 mx-auto mb-4"></i>
         <h3 class="text-lg font-semibold text-white mb-2">{{ __('messages.no_flights_found') }}</h3>
@@ -144,6 +144,11 @@
             </div>
         </a>
         @endforeach
+    </div>
+
+    <!-- Pagination Links -->
+    <div class="mt-8 flex justify-between items-center bg-white/5 border border-white/10 rounded-2xl p-4">
+        {{ $flights->appends(request()->query())->links() }}
     </div>
     @endif
 </div>

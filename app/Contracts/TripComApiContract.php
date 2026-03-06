@@ -8,9 +8,9 @@ interface TripComApiContract
      * Search for hotels based on criteria.
      *
      * @param array $params ['city', 'check_in', 'check_out', 'guests', 'rooms']
-     * @return array
+     * @return array|\Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function searchHotels(array $params): array;
+    public function searchHotels(array $params);
 
     /**
      * Get detailed information about a specific hotel.
@@ -24,9 +24,9 @@ interface TripComApiContract
      * Search for flights based on criteria.
      *
      * @param array $params ['origin', 'destination', 'departure_date', 'return_date', 'passengers', 'cabin_class']
-     * @return array
+     * @return array|\Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function searchFlights(array $params): array;
+    public function searchFlights(array $params);
 
     /**
      * Get detailed information about a specific flight.

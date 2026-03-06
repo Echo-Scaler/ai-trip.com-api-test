@@ -47,11 +47,11 @@
                 {{ __('messages.all_hotels') }}
                 @endif
             </h1>
-            <p class="text-sm text-gray-400 mt-1">{{ count($hotels) }} {{ __('messages.results_found') }}</p>
+            <p class="text-sm text-gray-400 mt-1">{{ $hotels->total() }} {{ __('messages.results_found') }}</p>
         </div>
     </div>
 
-    @if(count($hotels) === 0)
+    @if($hotels->isEmpty())
     <!-- No Results -->
     <div class="glass rounded-2xl p-12 text-center">
         <i data-lucide="search-x" class="w-12 h-12 text-gray-500 mx-auto mb-4"></i>
@@ -65,8 +65,8 @@
     <!-- Hotel Cards Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach($hotels as $hotel)
-        <a href="{{ route('hotels.show', $hotel['id']) }}" class="glass rounded-2xl overflow-hidden card-hover shine-effect group">
-            <div class="relative h-48 overflow-hidden">
+        <a href="{{ route('hotels.show', $hotel['id']) }}" class="glass rounded-2xl overflow-hidden card-hover shine-effect group flex flex-col">
+            <div class="relative h-48 overflow-hidden flex-shrink-0">
                 <img src="{{ $hotel['image_url'] }}" alt="{{ $hotel['name'] }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy">
                 <div class="absolute inset-0 bg-gradient-to-t from-dark-950/80 via-transparent to-transparent"></div>
                 @if(isset($hotel['original_price']) && $hotel['original_price'] > $hotel['price_per_night'])
@@ -79,25 +79,26 @@
                     {{ $hotel['rating'] }}
                 </div>
             </div>
-            <div class="p-5">
+            <div class="p-5 flex-1 flex flex-col">
                 <div class="flex items-center gap-1 mb-2">
                     @for($i = 0; $i < $hotel['stars']; $i++)
                         <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
                         @endfor
                 </div>
-                <h3 class="text-lg font-bold text-white mb-1 group-hover:text-primary-400 transition-colors">{{ $hotel['name'] }}</h3>
-                <p class="text-sm text-gray-400 flex items-center gap-1 mb-3">
-                    <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> {{ $hotel['address'] }}, {{ $hotel['city'] }}
+                <h3 class="text-lg font-bold text-white mb-1 group-hover:text-primary-400 transition-colors line-clamp-1 truncate">{{ $hotel['name'] }}</h3>
+                <p class="text-sm text-gray-400 flex items-center gap-1 mb-3 truncate">
+                    <i data-lucide="map-pin" class="w-3.5 h-3.5 flex-shrink-0"></i>
+                    <span class="truncate">{{ $hotel['address'] }}, {{ $hotel['city'] }}</span>
                 </p>
                 <div class="flex flex-wrap gap-1.5 mb-4">
                     @foreach(array_slice($hotel['amenities'], 0, 4) as $amenity)
-                    <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-primary-500/10 text-primary-400 border border-primary-500/20">{{ $amenity }}</span>
+                    <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-primary-500/10 text-primary-400 border border-primary-500/20 whitespace-nowrap">{{ $amenity }}</span>
                     @endforeach
                     @if(count($hotel['amenities']) > 4)
-                    <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-white/5 text-gray-400">+{{ count($hotel['amenities']) - 4 }} {{ __('messages.more') }}</span>
+                    <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-white/5 text-gray-400 whitespace-nowrap">+{{ count($hotel['amenities']) - 4 }} {{ __('messages.more') }}</span>
                     @endif
                 </div>
-                <div class="flex items-end justify-between pt-3 border-t border-white/5">
+                <div class="flex items-end justify-between pt-3 border-t border-white/5 mt-auto">
                     <div>
                         @if(isset($hotel['original_price']))
                         <span class="text-xs text-gray-500 line-through">{{ \App\Helpers\CurrencyHelper::format($hotel['original_price']) }}</span>
@@ -109,6 +110,11 @@
             </div>
         </a>
         @endforeach
+    </div>
+
+    <!-- Pagination Links -->
+    <div class="mt-8 flex justify-between items-center bg-white/5 border border-white/10 rounded-2xl p-4">
+        {{ $hotels->appends(request()->query())->links() }}
     </div>
     @endif
 </div>
