@@ -33,3 +33,6 @@ Route::post('/booking', [BookingController::class, 'store'])->name('booking.stor
 // AI Chatbot
 Route::post('/chat', [ChatController::class, 'chat'])->name('chat.send');
 Route::post('/chat/clear', [ChatController::class, 'clear'])->name('chat.clear');
+
+// Location Autocomplete
+Route::get('/api/locations/suggest', [\App\Http\Controllers\LocationController::class, 'suggest'])->name('api.locations.suggest');

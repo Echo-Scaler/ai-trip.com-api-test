@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Search Results — TripExplorer</title>
+    <meta name="description" content="Find the best hotel deals. Search results powered by Trip.com API.">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eef7ff',
+                            100: '#d9edff',
+                            200: '#bbe0ff',
+                            300: '#8eccff',
+                            400: '#5ab1ff',
+                            500: '#3490fc',
+                            600: '#1e70f1',
+                            700: '#165ade',
+                            800: '#1849b4',
+                            900: '#1a3f8d',
+                            950: '#152856'
+                        },
+                        accent: {
+                            50: '#fdf4ff',
+                            100: '#fae8ff',
+                            200: '#f5d0fe',
+                            300: '#f0abfc',
+                            400: '#e879f9',
+                            500: '#d946ef',
+                            600: '#c026d3',
+                            700: '#a21caf',
+                            800: '#86198f',
+                            900: '#701a75'
+                        },
+                        dark: {
+                            800: '#1e1b2e',
+                            850: '#181527',
+                            900: '#110e1f',
+                            950: '#0a0816'
+                        },
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <!-- Leaflet Maps CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <!-- Leaflet Maps JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        // Fix Leaflet marker icon paths when using CDN
+        if (typeof L !== 'undefined') {
+            delete L.Icon.Default.prototype._getIconUrl;
+            L.Icon.Default.mergeOptions({
+                iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+                iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+                shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+            });
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-light {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        /* Animated gradient background */
+        .hero-gradient {
+            background: linear-gradient(135deg, #0a0816 0%, #1a1035 25%, #152856 50%, #1a3f8d 75%, #1e1b2e 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        /* Card hover effects */
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 60px rgba(52, 144, 252, 0.15), 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Shine effect on hover */
+        .shine-effect {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shine-effect::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.05) 50%, transparent 70%);
+            transform: translateX(-100%) rotate(0deg);
+            transition: transform 0.7s ease;
+        }
+
+        .shine-effect:hover::after {
+            transform: translateX(50%) rotate(0deg);
+        }
+
+        /* Pulse dot */
+        .pulse-dot {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(1.5);
+            }
+        }
+
+        /* Float animation */
+        .float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Star rating */
+        .star-filled {
+            color: #fbbf24;
+        }
+
+        /* Smooth scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #110e1f;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3490fc;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5ab1ff;
+        }
+
+        /* Input custom styles */
+        .input-glow:focus {
+            box-shadow: 0 0 0 3px rgba(52, 144, 252, 0.3);
+        }
+
+        /* Badge shine */
+        .badge-gradient {
+            background: linear-gradient(135deg, rgba(52, 144, 252, 0.2), rgba(217, 70, 239, 0.2));
+        }
+
+        /* Nav blur */
+        .nav-blur {
+            backdrop-filter: blur(24px) saturate(1.8);
+            -webkit-backdrop-filter: blur(24px) saturate(1.8);
+        }
+    </style>
+    </head>
+
+<body class="bg-dark-950 text-gray-100 min-h-screen antialiased">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 nav-blur bg-dark-950/70 border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <a href="http://localhost:8000" class="flex items-center gap-3 group">
+                    <div class="relative">
+                        <div class="w-9 h-9 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/25 group-hover:shadow-primary-500/40 transition-shadow">
+                            <i data-lucide="globe" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <div class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-green-400 rounded-full pulse-dot border-2 border-dark-950"></div>
+                    </div>
+                    <div>
+                        <span class="text-lg font-bold bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">TripExplorer</span>
+                        <span class="block text-[10px] text-gray-500 -mt-1 font-medium tracking-wider">TRIP.COM API</span>
+                    </div>
+                </a>
+
+                <!-- Nav Links -->
+                <div class="hidden md:flex items-center gap-1">
+                    <a href="http://localhost:8000" class="px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all ">
+                        <span class="flex items-center gap-2"><i data-lucide="home" class="w-4 h-4"></i> Home</span>
+                    </a>
+                    <a href="http://localhost:8000/hotels/search" class="px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all text-white bg-white/5">
+                        <span class="flex items-center gap-2"><i data-lucide="building-2" class="w-4 h-4"></i> Hotels</span>
+                    </a>
+                    <a href="http://localhost:8000/flights/search" class="px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all ">
+                        <span class="flex items-center gap-2"><i data-lucide="plane" class="w-4 h-4"></i> Flights</span>
+                    </a>
+
+
+                    <div class="h-6 w-px bg-white/10 mx-2"></div>
+
+                    <!-- Language Dropdown -->
+                    <div class="relative group">
+                        <button class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all">
+                            <i data-lucide="languages" class="w-4 h-4"></i>
+                            <span class="uppercase">en</span>
+                            <i data-lucide="chevron-down" class="w-3 h-3 opacity-50"></i>
+                        </button>
+                        <div class="absolute right-0 mt-1 w-32 glass rounded-xl overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right scale-95 group-hover:scale-100 shadow-xl border border-white/10">
+                            <a href="http://localhost:8000/locale/language/en" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/10 bg-primary-500/10 text-primary-400">English</a>
+                            <a href="http://localhost:8000/locale/language/es" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/10 ">Español</a>
+                            <a href="http://localhost:8000/locale/language/ja" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/10 ">日本語</a>
+                        </div>
+                    </div>
+
+                    <!-- Currency Dropdown -->
+                    <div class="relative group">
+                        <button class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all">
+                            <i data-lucide="coins" class="w-4 h-4"></i>
+                            <span class="uppercase">USD</span>
+                            <i data-lucide="chevron-down" class="w-3 h-3 opacity-50"></i>
+                        </button>
+                        <div class="absolute right-0 mt-1 w-24 glass rounded-xl overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right scale-95 group-hover:scale-100 shadow-xl border border-white/10">
+                            <a href="http://localhost:8000/locale/currency/USD" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/10 bg-primary-500/10 text-primary-400">USD</a>
+                            <a href="http://localhost:8000/locale/currency/EUR" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/10 ">EUR</a>
+                            <a href="http://localhost:8000/locale/currency/JPY" class="block px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/10 ">JPY</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile menu button -->
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all">
+                    <i data-lucide="menu" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-white/5 bg-dark-950/95">
+            <div class="px-4 py-3 space-y-1">
+                <a href="http://localhost:8000" class="block px-4 py-2.5 rounded-xl text-sm text-gray-300 hover:text-white hover:bg-white/5">Home</a>
+                <a href="http://localhost:8000/hotels/search" class="block px-4 py-2.5 rounded-xl text-sm text-gray-300 hover:text-white hover:bg-white/5">Hotels</a>
+                <a href="http://localhost:8000/flights/search" class="block px-4 py-2.5 rounded-xl text-sm text-gray-300 hover:text-white hover:bg-white/5">Flights</a>
+
+
+                <div class="border-t border-white/10 my-2"></div>
+
+                <div class="grid grid-cols-2 gap-2 text-center text-sm">
+                    <a href="http://localhost:8000/locale/language/en" class="py-2.5 rounded-xl text-gray-300 hover:bg-white/5 bg-primary-500/10 text-primary-400">English</a>
+                    <a href="http://localhost:8000/locale/language/es" class="py-2.5 rounded-xl text-gray-300 hover:bg-white/5 ">Español</a>
+                    <a href="http://localhost:8000/locale/language/ja" class="py-2.5 rounded-xl text-gray-300 hover:bg-white/5 ">日本語</a>
+                </div>
+
+                <div class="border-t border-white/10 my-2"></div>
+
+                <div class="grid grid-cols-3 gap-2 text-center text-sm">
+                    <a href="http://localhost:8000/locale/currency/USD" class="py-2.5 rounded-xl text-gray-300 hover:bg-white/5 bg-primary-500/10 text-primary-400">USD</a>
+                    <a href="http://localhost:8000/locale/currency/EUR" class="py-2.5 rounded-xl text-gray-300 hover:bg-white/5 ">EUR</a>
+                    <a href="http://localhost:8000/locale/currency/JPY" class="py-2.5 rounded-xl text-gray-300 hover:bg-white/5 ">JPY</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <!-- Search Header -->
+    <div class="glass rounded-2xl p-6 mb-8">
+        <form action="http://localhost:8000/hotels/search" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
+            <div class="relative location-search-container">
+                <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">Destination</label>
+                <div class="relative">
+                    <i data-lucide="map-pin" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+                    <input type="text" name="city" id="location-input" value="Tokyo" placeholder="City name..." class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:outline-none input-glow focus:border-primary-500/50 transition-all" autocomplete="off">
+                </div>
+                <!-- Autocomplete Dropdown -->
+                <div id="autocomplete-results" class="absolute z-[100] left-0 right-0 mt-2 glass rounded-xl overflow-hidden hidden shadow-2xl border border-white/10 max-h-60 overflow-y-auto"></div>
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">Check-in</label>
+                <input type="date" name="check_in" value="" class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:outline-none input-glow focus:border-primary-500/50 transition-all">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">Check-out</label>
+                <input type="date" name="check_out" value="" class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:outline-none input-glow focus:border-primary-500/50 transition-all">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">Guests</label>
+                <select name="guests" class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:outline-none input-glow focus:border-primary-500/50 transition-all appearance-none">
+                                            <option value="1" selected class="bg-dark-900">1 Guest</option>
+                                                <option value="2"  class="bg-dark-900">2 Guests</option>
+                                                <option value="3"  class="bg-dark-900">3 Guests</option>
+                                                <option value="4"  class="bg-dark-900">4 Guests</option>
+                                                <option value="5"  class="bg-dark-900">5 Guests</option>
+                                                <option value="6"  class="bg-dark-900">6 Guests</option>
+                                                <option value="7"  class="bg-dark-900">7 Guests</option>
+                                                <option value="8"  class="bg-dark-900">8 Guests</option>
+                                                <option value="9"  class="bg-dark-900">9 Guests</option>
+                                                <option value="10"  class="bg-dark-900">10 Guests</option>
+                                        </select>
+            </div>
+            <button type="submit" class="py-3 px-6 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary-600/25 flex items-center justify-center gap-2">
+                <i data-lucide="search" class="w-4 h-4"></i> Search
+            </button>
+        </form>
+    </div>
+
+    <!-- Results Count & Toggle -->
+    <div class="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-white">
+                                Hotels in &quot;Tokyo&quot;
+                            </h1>
+            <p class="text-sm text-gray-400 mt-1">4 results found</p>
+        </div>
+
+        <div class="flex items-center gap-1 bg-white/5 border border-white/10 p-1 rounded-xl">
+            <button onclick="toggleView('grid')" id="grid-view-btn" class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all bg-primary-500 text-white shadow-lg shadow-primary-500/20">
+                <i data-lucide="grid" class="w-4 h-4"></i> Grid View
+            </button>
+            <button onclick="toggleView('map')" id="map-view-btn" class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white transition-all">
+                <i data-lucide="map" class="w-4 h-4"></i> Map View
+            </button>
+        </div>
+    </div>
+
+    
+    <div id="results-grid" class="block">
+        <!-- Hotel Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <a href="http://localhost:8000/hotels/28" class="glass rounded-2xl overflow-hidden card-hover shine-effect group flex flex-col">
+                <div class="relative h-48 overflow-hidden flex-shrink-0">
+                    <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&amp;q=80" alt="The Grand Sakura 8" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark-950/80 via-transparent to-transparent"></div>
+                                        <div class="absolute top-3 right-3 px-2.5 py-1 glass rounded-lg text-xs font-semibold text-white flex items-center gap-1">
+                        <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                        4.5
+                    </div>
+                </div>
+                <div class="p-5 flex-1 flex flex-col">
+                    <div class="flex items-center gap-1 mb-2">
+                                                    <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                                                        <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                                                        <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                                                        <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                                                </div>
+                    <h3 class="text-lg font-bold text-white mb-1 group-hover:text-primary-400 transition-colors line-clamp-1 truncate">The Grand Sakura 8</h3>
+                    <p class="text-sm text-gray-400 flex items-center gap-1 mb-3 truncate">
+                        <i data-lucide="map-pin" class="w-3.5 h-3.5 flex-shrink-0"></i>
+                        <span class="truncate">786 Main Street, Central District, Tokyo, Japan</span>
+                    </p>
+                    <div class="flex flex-wrap gap-1.5 mb-4">
+                                                <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-primary-500/10 text-primary-400 border border-primary-500/20 whitespace-nowrap">Airport Shuttle</span>
+                                                <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-primary-500/10 text-primary-400 border border-primary-500/20 whitespace-nowrap">Ocean View</span>
+                                                <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-primary-500/10 text-primary-400 border border-primary-500/20 whitespace-nowrap">Casino</span>
+                                                <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-primary-500/10 text-primary-400 border border-primary-500/20 whitespace-nowrap">Free WiFi</span>
+                                                                        <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-white/5 text-gray-400 whitespace-nowrap">+2 more</span>
+                                            </div>
+                    <div class="flex items-end justify-between pt-3 border-t border-white/5 mt-auto">
+                        <div>
+                                                        <span class="text-xs text-gray-500 line-through">$351</span>
+                                                        <div class="text-xl font-bold text-white">$351<span class="text-xs font-normal text-gray-400">/per night</span></div>
+                        </div>
+                        <span class="text-xs text-gray-500">1,021 reviews</span>
+                    </div>
+                </div>
+            </a>
+                        <a href="http://localhost:8000/hotels/29" class="glass rounded-2xl overflow-hidden card-hover shine-effect group flex flex-col">
+                <div class="relative h-48 overflow-hidden flex-shrink-0">
+                    <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&amp;q=80" alt="The Grand Sakura 6" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark-950/80 via-transparent to-transparent"></div>
+                                        <div class="absolute top-3 left-3 px-2.5 py-1 bg-red-500/90 rounded-lg text-xs font-bold text-white">
+                        -38% OFF
+                    </div>
+                                        <div class="absolute top-3 right-3 px-2.5 py-1 glass rounded-lg text-xs font-semibold text-white flex items-center gap-1">
+                        <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                        5
+                    </div>
+                </div>
+                <div class="p-5 flex-1 flex flex-col">
+                    <div class="flex items-center gap-1 mb-2">
+                                                    <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                                                        <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                                                        <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                                                        <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                                                        <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                                                </div>
+                    <h3 class="text-lg font-bold text-white mb-1 group-hover:text-primary-400 transition-colors line-clamp-1 truncate">The Grand Sakura 6</h3>
+                    <p class="text-sm text-gray-400 flex items-center gap-1 mb-3 truncate">
+                        <i data-lucide="map-pin" class="w-3.5 h-3.5 flex-shrink-0"></i>
+                        <span class="truncate">192 Main Street, Central District, Tokyo, Japan</span>
+                    </p>
+                    <div class="flex flex-wrap gap-1.5 mb-4">
+                                                <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-primary-500/10 text-primary-400 border border-primary-500/20 whitespace-nowrap">Yoga Studio</span>
+                                                <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-primary-500/10 text-primary-400 border border-primary-500/20 whitespace-nowrap">Room Service</span>
+                                                <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-primary-500/10 text-primary-400 border border-primary-500/20 whitespace-nowrap">Restaurant</span>
+                                                <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-primary-500/10 text-primary-400 border border-primary-500/20 whitespace-nowrap">Bar</span>
+                                                                        <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-white/5 text-gray-400 whitespace-nowrap">+1 more</span>
+                                            </div>
+                    <div class="flex items-end justify-between pt-3 border-t border-white/5 mt-auto">
+                        <div>
+                                                        <span class="text-xs text-gray-500 line-through">$233</span>
+                                                        <div class="text-xl font-bold text-white">$145<span class="text-xs font-normal text-gray-400">/per night</span></div>
+                        </div>
+                        <span class="text-xs text-gray-500">967 reviews</span>
+                    </div>
+                </div>
+            </a>
+                        <a href="http://localhost:8000/hotels/72" class="glass rounded-2xl overflow-hidden card-hover shine-effect group flex flex-col">
+                <div class="relative h-48 overflow-hidden flex-shrink-0">
+                    <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&amp;q=80" alt="The Grand Sakura 6" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark-950/80 via-transparent to-transparent"></div>
+                                        <div class="absolute top-3 left-3 px-2.5 py-1 bg-red-500/90 rounded-lg text-xs font-bold text-white">
+                        -10% OFF
+                    </div>
+                                        <div class="absolute top-3 right-3 px-2.5 py-1 glass rounded-lg text-xs font-semibold text-white flex items-center gap-1">
+                        <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                        4.2
+                    </div>
+                </div>
+                <div class="p-5 flex-1 flex flex-col">
+                    <div class="flex items-center gap-1 mb-2">
+                                                    <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                                                        <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                                                        <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                                                        <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                                                        <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                                                </div>
+                    <h3 class="text-lg font-bold text-white mb-1 group-hover:text-primary-400 transition-colors line-clamp-1 truncate">The Grand Sakura 6</h3>
+                    <p class="text-sm text-gray-400 flex items-center gap-1 mb-3 truncate">
+                        <i data-lucide="map-pin" class="w-3.5 h-3.5 flex-shrink-0"></i>
+                        <span class="truncate">540 Main Street, Central District, Tokyo, Japan</span>
+                    </p>
+                    <div class="flex flex-wrap gap-1.5 mb-4">
+                                                <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-primary-500/10 text-primary-400 border border-primary-500/20 whitespace-nowrap">Spa</span>
+                                                <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-primary-500/10 text-primary-400 border border-primary-500/20 whitespace-nowrap">Room Service</span>
+                                                <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-primary-500/10 text-primary-400 border border-primary-500/20 whitespace-nowrap">Yoga Studio</span>
+                                                <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-primary-500/10 text-primary-400 border border-primary-500/20 whitespace-nowrap">Free Breakfast</span>
+                                                                        <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-white/5 text-gray-400 whitespace-nowrap">+2 more</span>
+                                            </div>
+                    <div class="flex items-end justify-between pt-3 border-t border-white/5 mt-auto">
+                        <div>
+                                                        <span class="text-xs text-gray-500 line-through">$417</span>
+                                                        <div class="text-xl font-bold text-white">$374<span class="text-xs font-normal text-gray-400">/per night</span></div>
+                        </div>
+                        <span class="text-xs text-gray-500">2,479 reviews</span>
+                    </div>
+                </div>
+            </a>
+                        <a href="http://localhost:8000/hotels/91" class="glass rounded-2xl overflow-hidden card-hover shine-effect group flex flex-col">
+                <div class="relative h-48 overflow-hidden flex-shrink-0">
+                    <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&amp;q=80" alt="The Grand Sakura 2" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark-950/80 via-transparent to-transparent"></div>
+                                        <div class="absolute top-3 left-3 px-2.5 py-1 bg-red-500/90 rounded-lg text-xs font-bold text-white">
+                        -22% OFF
+                    </div>
+                                        <div class="absolute top-3 right-3 px-2.5 py-1 glass rounded-lg text-xs font-semibold text-white flex items-center gap-1">
+                        <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                        4.1
+                    </div>
+                </div>
+                <div class="p-5 flex-1 flex flex-col">
+                    <div class="flex items-center gap-1 mb-2">
+                                                    <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                                                        <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                                                        <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                                                        <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                                                        <i data-lucide="star" class="w-3 h-3 star-filled fill-current"></i>
+                                                </div>
+                    <h3 class="text-lg font-bold text-white mb-1 group-hover:text-primary-400 transition-colors line-clamp-1 truncate">The Grand Sakura 2</h3>
+                    <p class="text-sm text-gray-400 flex items-center gap-1 mb-3 truncate">
+                        <i data-lucide="map-pin" class="w-3.5 h-3.5 flex-shrink-0"></i>
+                        <span class="truncate">298 Main Street, Central District, Tokyo, Japan</span>
+                    </p>
+                    <div class="flex flex-wrap gap-1.5 mb-4">
+                                                <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-primary-500/10 text-primary-400 border border-primary-500/20 whitespace-nowrap">Pool</span>
+                                                <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-primary-500/10 text-primary-400 border border-primary-500/20 whitespace-nowrap">Restaurant</span>
+                                                <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-primary-500/10 text-primary-400 border border-primary-500/20 whitespace-nowrap">Ocean View</span>
+                                                <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-primary-500/10 text-primary-400 border border-primary-500/20 whitespace-nowrap">Bar</span>
+                                                                        <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-white/5 text-gray-400 whitespace-nowrap">+1 more</span>
+                                            </div>
+                    <div class="flex items-end justify-between pt-3 border-t border-white/5 mt-auto">
+                        <div>
+                                                        <span class="text-xs text-gray-500 line-through">$373</span>
+                                                        <div class="text-xl font-bold text-white">$292<span class="text-xs font-normal text-gray-400">/per night</span></div>
+                        </div>
+                        <span class="text-xs text-gray-500">1,185 reviews</span>
+                    </div>
+                </div>
+            </a>
+                    </div>
+
+        <!-- Pagination Links -->
+        <div class="mt-8 flex justify-between items-center bg-white/5 border border-white/10 rounded-2xl p-4">
+            
+        </div>
+    </div>
+
+    <!-- Map View -->
+    <div id="results-map" class="hidden h-[600px] w-full glass rounded-2xl overflow-hidden relative border border-white/10">
+        <div id="map" class="w-full h-full z-0"></div>
+    </div>
+    </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/5 bg-dark-950/80 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl flex items-center justify-center">
+                            <i data-lucide="globe" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <span class="text-lg font-bold text-white">TripExplorer</span>
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed max-w-md">
+                        A real-world Trip.com API integration demo built with Laravel & Tailwind CSS.
+                        Search hotels & flights powered by the Trip.com Partner API.
+                    </p>
+                    <div class="flex items-center gap-2 mt-4">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-400 pulse-dot"></span>
+                            API Connected
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium badge-gradient text-primary-300 border border-primary-500/20">
+                            Mock Mode
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-white mb-4">Explore</h3>
+                    <ul class="space-y-2.5">
+                        <li><a href="http://localhost:8000/hotels/search" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">Search Hotels</a></li>
+                        <li><a href="http://localhost:8000/flights/search" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">Search Flights</a></li>
+                        <li><a href="http://localhost:8000/faq" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-white mb-4">Integration</h3>
+                    <ul class="space-y-2.5">
+                        <li><a href="https://www.trip.com/openplatform/" target="_blank" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">Trip.com Open Platform</a></li>
+                        <li><a href="https://laravel.com/docs" target="_blank" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">Laravel Docs</a></li>
+                        <li><a href="https://tailwindcss.com/docs" target="_blank" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">Tailwind CSS</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-white/5 mt-10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p class="text-xs text-gray-500">© 2026 TripExplorer — Trip.com API Integration Demo</p>
+                <p class="text-xs text-gray-600">Built with Laravel 12.53.0 + Tailwind CSS</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Lucide Icons Init -->
+    <script>
+        lucide.createIcons();
+    </script>
+
+    <!-- Mobile menu toggle -->
+    <script>
+        document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
+            document.getElementById('mobile-menu')?.classList.toggle('hidden');
+        });
+    </script>
+
+    <!-- AI Chat Widget -->
+    <div id="chat-widget" class="fixed bottom-6 right-6 z-[100]">
+        <!-- Chat Toggle Button -->
+        <button id="chat-toggle" onclick="toggleChat()" class="h-14 px-6 rounded-full bg-gradient-to-br from-primary-600 to-accent-600 flex items-center gap-3 shadow-lg shadow-primary-600/30 hover:shadow-primary-500/50 transition-all hover:-translate-y-1 group relative chat-glow-pulse">
+            <div class="relative flex items-center justify-center">
+                <i data-lucide="bot" class="w-6 h-6 text-white chat-icon-open"></i>
+                <i data-lucide="x" class="w-6 h-6 text-white chat-icon-close hidden"></i>
+            </div>
+            <span class="text-white font-medium text-sm chat-text-open">Chat with AI</span>
+            <span class="absolute -top-1 -right-1 flex h-4 w-4">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-4 w-4 bg-green-500 border-2 border-dark-950"></span>
+            </span>
+        </button>
+
+        <!-- Chat Panel -->
+        <div id="chat-panel" class="hidden absolute bottom-20 right-0 w-[380px] max-h-[520px] glass rounded-2xl overflow-hidden shadow-2xl shadow-black/40 flex flex-col border border-white/10" style="display:none;">
+            <!-- Chat Header -->
+            <div class="flex items-center justify-between p-4 border-b border-white/5 bg-dark-900/50">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center shadow-md">
+                        <i data-lucide="bot" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm font-bold text-white">TripExplorer AI</div>
+                        <div class="text-[10px] text-green-400 flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-400 inline-block"></span> Online
+                        </div>
+                    </div>
+                </div>
+                <button onclick="clearChat()" class="p-1.5 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white transition-all" title="Clear chat">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Chat Messages -->
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3" style="max-height: 340px; min-height: 280px;">
+                <!-- Welcome message -->
+                <div class="flex gap-2.5 chat-msg-bot">
+                    <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <i data-lucide="bot" class="w-3.5 h-3.5 text-white"></i>
+                    </div>
+                    <div class="bg-white/5 rounded-2xl rounded-tl-md px-4 py-2.5 max-w-[85%]">
+                        <p class="text-sm text-gray-200 leading-relaxed">Hello! 👋 I'm your TripExplorer AI assistant. I can help you find hotels, flights, and the best deals across Asia. What are you looking for?</p>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="flex flex-wrap gap-1.5 pl-9" id="quick-actions">
+                    <button onclick="sendQuickMsg('Show me hotels in Tokyo')" class="px-3 py-1.5 rounded-full bg-primary-500/10 border border-primary-500/20 text-xs font-medium text-primary-400 hover:bg-primary-500/20 transition-all">🏨 Hotels in Tokyo</button>
+                    <button onclick="sendQuickMsg('Find cheap flights')" class="px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-medium text-blue-400 hover:bg-blue-500/20 transition-all">✈️ Cheap flights</button>
+                    <button onclick="sendQuickMsg('Show me coupon codes')" class="px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/20 text-xs font-medium text-green-400 hover:bg-green-500/20 transition-all">🎟️ Coupons</button>
+                    <button onclick="sendQuickMsg('Trip packages')" class="px-3 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-xs font-medium text-purple-400 hover:bg-purple-500/20 transition-all">📦 Packages</button>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="p-3 border-t border-white/5 bg-dark-900/30">
+                <form id="chat-form" onsubmit="sendMessage(event)" class="flex gap-2">
+                    <input type="text" id="chat-input" placeholder="Ask about hotels, flights..." autocomplete="off"
+                        class="flex-1 bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 text-sm text-white placeholder-gray-500 focus:outline-none input-glow focus:border-primary-500/50 transition-all">
+                    <button type="submit" id="chat-send-btn" class="px-4 py-2.5 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white rounded-xl transition-all shadow-lg shadow-primary-600/25 flex-shrink-0">
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                    </button>
+                </form>
+                <p class="text-[10px] text-gray-600 text-center mt-1.5">Powered by Gemini AI</p>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Chat widget animations */
+        #chat-panel {
+            animation: chatSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes chatSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .chat-msg-bot,
+        .chat-msg-user {
+            animation: msgFadeIn 0.3s ease-out;
+        }
+
+        @keyframes msgFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Enhanced Chat Widget Glow */
+        .chat-glow-pulse {
+            animation: chatGlowPulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes chatGlowPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(52, 144, 252, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 0 15px rgba(52, 144, 252, 0);
+            }
+        }
+
+        /* Typing indicator */
+        .typing-dot {
+            animation: typingBounce 1.4s ease-in-out infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingBounce {
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+            }
+
+            30% {
+                transform: translateY(-4px);
+            }
+        }
+
+        #chat-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        #chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(52, 144, 252, 0.3);
+            border-radius: 2px;
+        }
+
+        @media (max-width: 450px) {
+            #chat-panel {
+                width: calc(100vw - 32px);
+                right: -8px;
+            }
+        }
+    </style>
+
+    <!-- Chat Widget Script -->
+    <script>
+        let chatOpen = false;
+
+        function toggleChat() {
+            chatOpen = !chatOpen;
+            const panel = document.getElementById('chat-panel');
+            const openIcon = document.querySelector('.chat-icon-open');
+            const closeIcon = document.querySelector('.chat-icon-close');
+            const openText = document.querySelector('.chat-text-open');
+
+            if (chatOpen) {
+                panel.style.display = 'flex';
+                panel.classList.remove('hidden');
+                openIcon.classList.add('hidden');
+                if (openText) openText.classList.add('hidden');
+                closeIcon.classList.remove('hidden');
+                document.getElementById('chat-input').focus();
+                scrollChat();
+            } else {
+                panel.style.display = 'none';
+                panel.classList.add('hidden');
+                openIcon.classList.remove('hidden');
+                if (openText) openText.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+            }
+            lucide.createIcons();
+        }
+
+        function scrollChat() {
+            const container = document.getElementById('chat-messages');
+            setTimeout(() => container.scrollTop = container.scrollHeight, 50);
+        }
+
+        function formatMessage(text) {
+            // Bold: **text**
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>');
+            // Newlines to <br>
+            text = text.replace(/\n/g, '<br>');
+            // Bullet points
+            text = text.replace(/• /g, '<span class="text-primary-400">•</span> ');
+            return text;
+        }
+
+        function addMessage(content, isUser) {
+            const container = document.getElementById('chat-messages');
+            // Remove quick actions after first message
+            const qa = document.getElementById('quick-actions');
+            if (qa) qa.remove();
+
+            const div = document.createElement('div');
+            div.className = isUser ?
+                'flex gap-2.5 justify-end chat-msg-user' :
+                'flex gap-2.5 chat-msg-bot';
+
+            if (isUser) {
+                div.innerHTML = `
+                    <div class="bg-primary-600/20 border border-primary-500/20 rounded-2xl rounded-tr-md px-4 py-2.5 max-w-[85%]">
+                        <p class="text-sm text-gray-200 leading-relaxed">${formatMessage(content)}</p>
+                    </div>`;
+            } else {
+                div.innerHTML = `
+                    <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <i data-lucide="bot" class="w-3.5 h-3.5 text-white"></i>
+                    </div>
+                    <div class="bg-white/5 rounded-2xl rounded-tl-md px-4 py-2.5 max-w-[85%]">
+                        <p class="text-sm text-gray-200 leading-relaxed">${formatMessage(content)}</p>
+                    </div>`;
+            }
+
+            container.appendChild(div);
+            lucide.createIcons();
+            scrollChat();
+        }
+
+        function showTyping() {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.id = 'typing-indicator';
+            div.className = 'flex gap-2.5 chat-msg-bot';
+            div.innerHTML = `
+                <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <i data-lucide="bot" class="w-3.5 h-3.5 text-white"></i>
+                </div>
+                <div class="bg-white/5 rounded-2xl rounded-tl-md px-4 py-3">
+                    <div class="flex gap-1">
+                        <span class="typing-dot w-1.5 h-1.5 rounded-full bg-primary-400"></span>
+                        <span class="typing-dot w-1.5 h-1.5 rounded-full bg-primary-400"></span>
+                        <span class="typing-dot w-1.5 h-1.5 rounded-full bg-primary-400"></span>
+                    </div>
+                </div>`;
+            container.appendChild(div);
+            lucide.createIcons();
+            scrollChat();
+        }
+
+        function removeTyping() {
+            document.getElementById('typing-indicator')?.remove();
+        }
+
+        async function sendMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            input.value = '';
+            addMessage(msg, true);
+            showTyping();
+
+            // Disable input while waiting
+            input.disabled = true;
+            document.getElementById('chat-send-btn').disabled = true;
+
+            try {
+                const res = await fetch('http://localhost:8000/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': 'AMNskV2qhdsc6jIytBFpCC1106IHCxu8QnGSaZch',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: msg
+                    }),
+                });
+
+                const data = await res.json();
+                removeTyping();
+                addMessage(data.reply, false);
+            } catch (err) {
+                removeTyping();
+                addMessage('Sorry, something went wrong. Please try again!', false);
+            }
+
+            input.disabled = false;
+            document.getElementById('chat-send-btn').disabled = false;
+            input.focus();
+        }
+
+        function sendQuickMsg(msg) {
+            document.getElementById('chat-input').value = msg;
+            sendMessage(new Event('submit'));
+        }
+
+        async function clearChat() {
+            try {
+                await fetch('http://localhost:8000/chat/clear', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': 'AMNskV2qhdsc6jIytBFpCC1106IHCxu8QnGSaZch',
+                        'Accept': 'application/json',
+                    },
+                });
+            } catch (e) {}
+
+            const container = document.getElementById('chat-messages');
+            container.innerHTML = `
+                <div class="flex gap-2.5 chat-msg-bot">
+                    <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <i data-lucide="bot" class="w-3.5 h-3.5 text-white"></i>
+                    </div>
+                    <div class="bg-white/5 rounded-2xl rounded-tl-md px-4 py-2.5 max-w-[85%]">
+                        <p class="text-sm text-gray-200 leading-relaxed">Chat cleared! 🔄 How can I help you? Ask me about hotels, flights, or travel deals.</p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-1.5 pl-9" id="quick-actions">
+                    <button onclick="sendQuickMsg('Show me hotels in Tokyo')" class="px-3 py-1.5 rounded-full bg-primary-500/10 border border-primary-500/20 text-xs font-medium text-primary-400 hover:bg-primary-500/20 transition-all">🏨 Hotels in Tokyo</button>
+                    <button onclick="sendQuickMsg('Find cheap flights')" class="px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-medium text-blue-400 hover:bg-blue-500/20 transition-all">✈️ Cheap flights</button>
+                    <button onclick="sendQuickMsg('Show me coupon codes')" class="px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/20 text-xs font-medium text-green-400 hover:bg-green-500/20 transition-all">🎟️ Coupons</button>
+                    <button onclick="sendQuickMsg('Trip packages')" class="px-3 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-xs font-medium text-purple-400 hover:bg-purple-500/20 transition-all">📦 Packages</button>
+                </div>`;
+            lucide.createIcons();
+        }
+    </script>
+
+    <script>
+    let currentView = 'grid';
+    let map = null;
+    let markers = [];
+
+    const hotels = [{"id":28,"name":"The Grand Sakura 8","address":"786 Main Street, Central District","city":"Tokyo","country":"Japan","rating":4.5,"stars":4,"price_per_night":351,"original_price":351,"currency":"USD","image_url":"https:\/\/images.unsplash.com\/photo-1566073771259-6a8506099945?w=800\u0026q=80","amenities":["Airport Shuttle","Ocean View","Casino","Free WiFi","Restaurant","Pool"],"description":"A wonderful stay at The Grand Sakura located in Tokyo. Enjoy premium amenities and world-class service.","latitude":35.5862,"longitude":139.65429999999998,"review_count":1021},{"id":29,"name":"The Grand Sakura 6","address":"192 Main Street, Central District","city":"Tokyo","country":"Japan","rating":5,"stars":5,"price_per_night":145,"original_price":233,"currency":"USD","image_url":"https:\/\/images.unsplash.com\/photo-1566073771259-6a8506099945?w=800\u0026q=80","amenities":["Yoga Studio","Room Service","Restaurant","Bar","Ocean View"],"description":"A wonderful stay at The Grand Sakura located in Tokyo. Enjoy premium amenities and world-class service.","latitude":35.6622,"longitude":139.5813,"review_count":967},{"id":72,"name":"The Grand Sakura 6","address":"540 Main Street, Central District","city":"Tokyo","country":"Japan","rating":4.2,"stars":5,"price_per_night":374,"original_price":417,"currency":"USD","image_url":"https:\/\/images.unsplash.com\/photo-1566073771259-6a8506099945?w=800\u0026q=80","amenities":["Spa","Room Service","Yoga Studio","Free Breakfast","Restaurant","Pool"],"description":"A wonderful stay at The Grand Sakura located in Tokyo. Enjoy premium amenities and world-class service.","latitude":35.5822,"longitude":139.5633,"review_count":2479},{"id":91,"name":"The Grand Sakura 2","address":"298 Main Street, Central District","city":"Tokyo","country":"Japan","rating":4.1,"stars":5,"price_per_night":292,"original_price":373,"currency":"USD","image_url":"https:\/\/images.unsplash.com\/photo-1566073771259-6a8506099945?w=800\u0026q=80","amenities":["Pool","Restaurant","Ocean View","Bar","Spa"],"description":"A wonderful stay at The Grand Sakura located in Tokyo. Enjoy premium amenities and world-class service.","latitude":35.5892,"longitude":139.6753,"review_count":1185}];
+
+    function toggleView(view) {
+        if (view === currentView) return;
+        currentView = view;
+
+        const grid = document.getElementById('results-grid');
+        const mapContainer = document.getElementById('results-map');
+        const gridBtn = document.getElementById('grid-view-btn');
+        const mapBtn = document.getElementById('map-view-btn');
+
+        if (view === 'grid') {
+            grid.classList.remove('hidden');
+            mapContainer.classList.add('hidden');
+            gridBtn.classList.add('bg-primary-500', 'text-white', 'shadow-lg', 'shadow-primary-500/20');
+            gridBtn.classList.remove('text-gray-400');
+            mapBtn.classList.remove('bg-primary-500', 'text-white', 'shadow-lg', 'shadow-primary-500/20');
+            mapBtn.classList.add('text-gray-400');
+        } else {
+            grid.classList.add('hidden');
+            mapContainer.classList.remove('hidden');
+            mapBtn.classList.add('bg-primary-500', 'text-white', 'shadow-lg', 'shadow-primary-500/20');
+            mapBtn.classList.remove('text-gray-400');
+            gridBtn.classList.remove('bg-primary-500', 'text-white', 'shadow-lg', 'shadow-primary-500/20');
+            gridBtn.classList.add('text-gray-400');
+
+            initMap();
+        }
+        lucide.createIcons();
+    }
+
+    function initMap() {
+        if (map) {
+            setTimeout(() => map.invalidateSize(), 100);
+            return;
+        }
+
+        // Initialize map centered at first hotel or a default position
+        const centerCoords = hotels.length > 0 ? [hotels[0].latitude, hotels[0].longitude] : [0, 0];
+
+        map = L.map('map', {
+            zoomControl: false
+        }).setView(centerCoords, 10);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(map);
+
+        L.control.zoom({
+            position: 'bottomright'
+        }).addTo(map);
+
+        // Add markers
+        hotels.forEach(hotel => {
+            if (hotel.latitude === 0 && hotel.longitude === 0) return; // Skip dynamic results without coords
+
+            const marker = L.marker([hotel.latitude, hotel.longitude]).addTo(map);
+
+            const hotelUrl = "http://localhost:8000/hotels/:id".replace(':id', hotel.id);
+            const formattedPrice = new Intl.NumberFormat().format(hotel.price_per_night);
+
+            const popupContent = `
+                <div class="p-2 w-48 text-dark-950 font-sans">
+                    <img src="${hotel.image_url}" class="w-full h-24 object-cover rounded-lg mb-2">
+                    <h4 class="font-bold text-sm mb-1">${hotel.name}</h4>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-primary-600">${formattedPrice} USD</span>
+                        <span class="text-[10px] bg-yellow-400/20 text-yellow-700 px-1.5 py-0.5 rounded flex items-center gap-1">
+                            <i data-lucide="star" class="w-3 h-3 fill-current"></i> ${hotel.rating}
+                        </span>
+                    </div>
+                    <a href="${hotelUrl}" class="block w-full text-center py-1.5 bg-primary-600 text-white rounded-lg text-xs font-bold hover:bg-primary-500 transition-all">
+                        View Details
+                    </a>
+                </div>
+            `;
+
+            marker.bindPopup(popupContent, {
+                className: 'custom-popup'
+            });
+            markers.push(marker);
+        });
+
+        if (markers.length > 0) {
+            const group = new L.featureGroup(markers);
+            map.fitBounds(group.getBounds().pad(0.1));
+        }
+
+        map.on('popupopen', function() {
+            lucide.createIcons();
+        });
+    }
+
+    // Autocomplete Logic
+    const locationInput = document.getElementById('location-input');
+    const resultsContainer = document.getElementById('autocomplete-results');
+    let debounceTimer;
+
+    locationInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        const query = this.value.trim();
+
+        if (query.length < 2) {
+            resultsContainer.classList.add('hidden');
+            return;
+        }
+
+        debounceTimer = setTimeout(async () => {
+            try {
+                const response = await fetch(`http://localhost:8000/api/locations/suggest?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+
+                if (data.length > 0) {
+                    resultsContainer.innerHTML = '';
+                    data.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'px-4 py-3 hover:bg-white/10 cursor-pointer transition-colors flex items-center gap-3 border-b border-white/5 last:border-0';
+                        div.innerHTML = `
+                            <div class="w-8 h-8 rounded-lg bg-primary-500/10 flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="${item.type === 'city' ? 'map-pin' : 'plane'}" class="w-4 h-4 text-primary-400"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-white">${item.name}</div>
+                                <div class="text-[10px] text-gray-500 uppercase tracking-wider">${item.code} • ${item.type}</div>
+                            </div>
+                        `;
+                        div.onclick = () => {
+                            locationInput.value = item.name;
+                            resultsContainer.classList.add('hidden');
+                        };
+                        resultsContainer.appendChild(div);
+                    });
+                    resultsContainer.classList.remove('hidden');
+                    lucide.createIcons();
+                } else {
+                    resultsContainer.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Autocomplete error:', error);
+            }
+        }, 300);
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.location-search-container')) {
+            resultsContainer.classList.add('hidden');
+        }
+    });
+</script>
+
+<style>
+    /* Leaflet Dark Mode Customizations */
+    .leaflet-container {
+        background: #0a0816;
+    }
+
+    .custom-popup .leaflet-popup-content-wrapper {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 0;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .custom-popup .leaflet-popup-content {
+        margin: 0;
+    }
+
+    .custom-popup .leaflet-popup-tip {
+        background: #ffffff;
+    }
+
+    .leaflet-bar {
+        border: none !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .leaflet-bar a {
+        background-color: #1e1b2e !important;
+        color: #ffffff !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .leaflet-bar a:hover {
+        background-color: #2d2a3e !important;
+    }
+</style>
+</body>
+
+</html>

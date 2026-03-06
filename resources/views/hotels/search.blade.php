@@ -9,12 +9,14 @@
     <!-- Search Header -->
     <div class="glass rounded-2xl p-6 mb-8">
         <form action="{{ route('hotels.search') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
-            <div>
+            <div class="relative location-search-container">
                 <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">{{ __('messages.destination') }}</label>
                 <div class="relative">
                     <i data-lucide="map-pin" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
-                    <input type="text" name="city" value="{{ $params['city'] ?? '' }}" placeholder="{{ __('messages.city_name_placeholder') }}" class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:outline-none input-glow focus:border-primary-500/50 transition-all">
+                    <input type="text" name="city" id="location-input" value="{{ $params['city'] ?? '' }}" placeholder="{{ __('messages.city_name_placeholder') }}" class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:outline-none input-glow focus:border-primary-500/50 transition-all" autocomplete="off">
                 </div>
+                <!-- Autocomplete Dropdown -->
+                <div id="autocomplete-results" class="absolute z-[100] left-0 right-0 mt-2 glass rounded-xl overflow-hidden hidden shadow-2xl border border-white/10 max-h-60 overflow-y-auto"></div>
             </div>
             <div>
                 <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">{{ __('messages.check_in') }}</label>
@@ -27,7 +29,7 @@
             <div>
                 <label class="block text-xs font-medium text-gray-400 mb-1.5 ml-1">{{ __('messages.guests') }}</label>
                 <select name="guests" class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:outline-none input-glow focus:border-primary-500/50 transition-all appearance-none">
-                    @for($i = 1; $i <= 6; $i++)
+                    @for($i = 1; $i <= 10; $i++)
                         <option value="{{ $i }}" {{ ($params['guests'] ?? 1) == $i ? 'selected' : '' }} class="bg-dark-900">{{ $i }} {{ __('messages.guest') }}{{ $i > 1 ? 's' : '' }}</option>
                         @endfor
                 </select>
@@ -200,6 +202,8 @@
 
         // Add markers
         hotels.forEach(hotel => {
+            if (hotel.latitude === 0 && hotel.longitude === 0) return; // Skip dynamic results without coords
+
             const marker = L.marker([hotel.latitude, hotel.longitude]).addTo(map);
 
             const hotelUrl = "{{ route('hotels.show', ':id') }}".replace(':id', hotel.id);
@@ -236,6 +240,63 @@
             lucide.createIcons();
         });
     }
+
+    // Autocomplete Logic
+    const locationInput = document.getElementById('location-input');
+    const resultsContainer = document.getElementById('autocomplete-results');
+    let debounceTimer;
+
+    locationInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        const query = this.value.trim();
+
+        if (query.length < 2) {
+            resultsContainer.classList.add('hidden');
+            return;
+        }
+
+        debounceTimer = setTimeout(async () => {
+            try {
+                const response = await fetch(`{{ route('api.locations.suggest') }}?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+
+                if (data.length > 0) {
+                    resultsContainer.innerHTML = '';
+                    data.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'px-4 py-3 hover:bg-white/10 cursor-pointer transition-colors flex items-center gap-3 border-b border-white/5 last:border-0';
+                        div.innerHTML = `
+                            <div class="w-8 h-8 rounded-lg bg-primary-500/10 flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="${item.type === 'city' ? 'map-pin' : 'plane'}" class="w-4 h-4 text-primary-400"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-white">${item.name}</div>
+                                <div class="text-[10px] text-gray-500 uppercase tracking-wider">${item.code} • ${item.type}</div>
+                            </div>
+                        `;
+                        div.onclick = () => {
+                            locationInput.value = item.name;
+                            resultsContainer.classList.add('hidden');
+                        };
+                        resultsContainer.appendChild(div);
+                    });
+                    resultsContainer.classList.remove('hidden');
+                    lucide.createIcons();
+                } else {
+                    resultsContainer.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Autocomplete error:', error);
+            }
+        }, 300);
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.location-search-container')) {
+            resultsContainer.classList.add('hidden');
+        }
+    });
 </script>
 
 <style>

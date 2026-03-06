@@ -64,6 +64,22 @@
                 <p class="text-gray-300 leading-relaxed">{{ $hotel['description'] }}</p>
             </div>
 
+            <!-- Gallery -->
+            @if(isset($hotel['gallery']))
+            <div class="glass rounded-2xl p-6">
+                <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <i data-lucide="image" class="w-5 h-5 text-primary-400"></i> {{ __('messages.gallery') ?? 'Gallery' }}
+                </h2>
+                <div class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x">
+                    @foreach($hotel['gallery'] as $img)
+                    <div class="flex-shrink-0 w-64 h-44 rounded-xl overflow-hidden border border-white/10 snap-center">
+                        <img src="{{ $img }}" class="w-full h-full object-cover hover:scale-110 transition-transform duration-500" loading="lazy">
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
             <!-- Amenities -->
             <div class="glass rounded-2xl p-6">
                 <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
@@ -98,28 +114,35 @@
                 </h2>
                 <div class="space-y-4">
                     @foreach($hotel['rooms'] as $room)
-                    <div class="glass-light rounded-xl p-5 hover:bg-white/10 transition-colors">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div class="flex-1">
-                                <h3 class="font-semibold text-white mb-2">{{ $room['name'] }}</h3>
-                                <div class="flex flex-wrap items-center gap-3 text-xs text-gray-400">
-                                    <span class="flex items-center gap-1"><i data-lucide="bed" class="w-3.5 h-3.5"></i> {{ $room['bed_type'] }}</span>
-                                    <span class="flex items-center gap-1"><i data-lucide="maximize-2" class="w-3.5 h-3.5"></i> {{ $room['size'] }}</span>
-                                    <span class="flex items-center gap-1"><i data-lucide="users" class="w-3.5 h-3.5"></i> Max {{ $room['max_guests'] }}</span>
-                                </div>
-                                <div class="flex flex-wrap gap-1.5 mt-3">
-                                    @foreach($room['includes'] as $inc)
-                                    <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-green-500/10 text-green-400 border border-green-500/20">{{ $inc }}</span>
-                                    @endforeach
-                                </div>
+                    <div class="glass-light rounded-xl p-0 overflow-hidden hover:bg-white/10 transition-colors">
+                        <div class="flex flex-col md:flex-row">
+                            @if(isset($room['image_url']))
+                            <div class="w-full md:w-48 h-48 md:h-auto flex-shrink-0">
+                                <img src="{{ $room['image_url'] }}" alt="{{ $room['name'] }}" class="w-full h-full object-cover">
                             </div>
-                            <div class="text-right flex-shrink-0">
-                                <div class="text-2xl font-bold text-white">{{ \App\Helpers\CurrencyHelper::format($room['price']) }}</div>
-                                <div class="text-xs text-gray-400 mb-3">{{ __('messages.per_night') }}</div>
-                                <a href="{{ route('booking.create', ['type' => 'hotel', 'item_id' => $hotel['id'], 'item_name' => $hotel['name'] . ' — ' . $room['name'], 'price' => $room['price'], 'currency' => $hotel['currency']]) }}"
-                                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-primary-600/25">
-                                    {{ __('messages.book_now') }}
-                                </a>
+                            @endif
+                            <div class="flex-1 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div class="flex-1">
+                                    <h3 class="font-semibold text-white mb-2">{{ $room['name'] }}</h3>
+                                    <div class="flex flex-wrap items-center gap-3 text-xs text-gray-400">
+                                        <span class="flex items-center gap-1"><i data-lucide="bed" class="w-3.5 h-3.5"></i> {{ $room['bed_type'] }}</span>
+                                        <span class="flex items-center gap-1"><i data-lucide="maximize-2" class="w-3.5 h-3.5"></i> {{ $room['size'] }}</span>
+                                        <span class="flex items-center gap-1"><i data-lucide="users" class="w-3.5 h-3.5"></i> Max {{ $room['max_guests'] }}</span>
+                                    </div>
+                                    <div class="flex flex-wrap gap-1.5 mt-3">
+                                        @foreach($room['includes'] as $inc)
+                                        <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-green-500/10 text-green-400 border border-green-500/20">{{ $inc }}</span>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                <div class="text-right flex-shrink-0">
+                                    <div class="text-2xl font-bold text-white">{{ \App\Helpers\CurrencyHelper::format($room['price']) }}</div>
+                                    <div class="text-xs text-gray-400 mb-3">{{ __('messages.per_night') }}</div>
+                                    <a href="{{ route('booking.create', ['type' => 'hotel', 'item_id' => $hotel['id'], 'item_name' => $hotel['name'] . ' — ' . $room['name'], 'price' => $room['price'], 'currency' => $hotel['currency']]) }}"
+                                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-primary-600/25">
+                                        {{ __('messages.book_now') }}
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -173,8 +196,10 @@
                     <i data-lucide="messages-square" class="w-6 h-6 text-primary-400"></i> {{ __('messages.guest_reviews') }}
                 </h2>
 
-                @if(isset($reviews) && $reviews->isNotEmpty())
+                @if((isset($reviews) && $reviews->isNotEmpty()) || (isset($hotel['reviews']) && count($hotel['reviews']) > 0))
                 <div class="space-y-6 mb-8">
+                    {{-- Display Database Reviews First --}}
+                    @if(isset($reviews))
                     @foreach($reviews as $review)
                     <div class="border-b border-white/5 pb-6 last:border-0 last:pb-0">
                         <div class="flex items-center justify-between mb-2">
@@ -189,6 +214,25 @@
                         <p class="text-sm text-gray-300">{{ $review->comment }}</p>
                     </div>
                     @endforeach
+                    @endif
+
+                    {{-- Display Mock Reviews if no DB reviews or as secondary --}}
+                    @if(isset($hotel['reviews']))
+                    @foreach($hotel['reviews'] as $mockReview)
+                    <div class="border-b border-white/5 pb-6 last:border-0 last:pb-0">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="font-bold text-white">{{ $mockReview['user'] }}</div>
+                            <div class="text-xs text-gray-400">{{ \Carbon\Carbon::parse($mockReview['date'])->diffForHumans() }}</div>
+                        </div>
+                        <div class="flex items-center gap-0.5 mb-3">
+                            @for($i = 1; $i <= 5; $i++)
+                                <i data-lucide="star" class="w-3.5 h-3.5 {{ $i <= $mockReview['rating'] ? 'star-filled fill-current' : 'text-gray-600' }}"></i>
+                                @endfor
+                        </div>
+                        <p class="text-sm text-gray-300">{{ $mockReview['comment'] }}</p>
+                    </div>
+                    @endforeach
+                    @endif
                 </div>
                 @else
                 <div class="text-center py-8 glass-light rounded-xl border border-dashed border-white/10 mb-8">
@@ -347,9 +391,11 @@
             const mapContainer = document.getElementById('hotel-map');
             if (mapContainer) {
                 const map = L.map('hotel-map', {
-                    zoomControl: false
+                    zoomControl: false,
+                    scrollWheelZoom: false // Better UX for scrolling pages
                 }).setView([hotel.latitude, hotel.longitude], 15);
 
+                // Use a more premium "Voyager" tile set
                 L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
                     subdomains: 'abcd',
@@ -360,13 +406,45 @@
                     position: 'bottomright'
                 }).addTo(map);
 
-                L.marker([hotel.latitude, hotel.longitude]).addTo(map)
+                // Main Hotel Marker
+                const hotelIcon = L.divIcon({
+                    className: 'custom-div-icon',
+                    html: `<div style="background-color: #3490fc; width: 12px; height: 12px; border: 2px solid white; border-radius: 50%; box-shadow: 0 0 10px rgba(52, 144, 252, 0.8);"></div>`,
+                    iconSize: [12, 12],
+                    iconAnchor: [6, 6]
+                });
+
+                L.marker([hotel.latitude, hotel.longitude], {
+                        icon: hotelIcon
+                    }).addTo(map)
                     .bindPopup(`<div class="p-1 font-bold text-dark-950">${hotel.name}</div>`);
 
-                // Force a resize check after a tiny delay
+                // Add markers for nearby locations (visual fidelity)
+                if (hotel.nearby && hotel.nearby.length > 0) {
+                    hotel.nearby.slice(0, 3).forEach((place, index) => {
+                        // Create a small deterministic offset for nearby locations
+                        const offsetLat = (Math.sin(index + 1) * 0.005);
+                        const offsetLng = (Math.cos(index + 1) * 0.005);
+
+                        L.marker([hotel.latitude + offsetLat, hotel.longitude + offsetLng], {
+                                icon: L.divIcon({
+                                    className: 'nearby-icon',
+                                    html: `<div style="background-color: #6366f1; width: 8px; height: 8px; border: 1px solid white; border-radius: 50%;"></div>`,
+                                    iconSize: [8, 8],
+                                    iconAnchor: [4, 4]
+                                })
+                            }).addTo(map)
+                            .bindPopup(`<div class="p-1 text-xs text-dark-800">${place}</div>`);
+                    });
+                }
+
+                // Force a resize check after a tiny delay and on window resize
                 setTimeout(() => {
                     map.invalidateSize();
-                }, 100);
+                }, 300);
+                window.addEventListener('resize', () => {
+                    map.invalidateSize();
+                });
             }
         }
     });
