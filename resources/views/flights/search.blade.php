@@ -89,7 +89,7 @@
                     <div class="text-center">
                         <div class="text-2xl font-bold text-white">{{ $flight['departure_time'] }}</div>
                         <div class="text-sm text-gray-400">{{ $flight['origin'] }}</div>
-                        <div class="text-xs text-gray-500">{{ $flight['origin_city'] }}</div>
+                        <div class="text-xs text-gray-500">{{ $flight['origin_city'] }}, {{ $flight['origin_country'] }}</div>
                     </div>
 
                     <div class="flex-1 flex flex-col items-center gap-1">
@@ -111,7 +111,7 @@
                     <div class="text-center">
                         <div class="text-2xl font-bold text-white">{{ $flight['arrival_time'] }}</div>
                         <div class="text-sm text-gray-400">{{ $flight['destination'] }}</div>
-                        <div class="text-xs text-gray-500">{{ $flight['destination_city'] }}</div>
+                        <div class="text-xs text-gray-500">{{ $flight['destination_city'] }}, {{ $flight['destination_country'] }}</div>
                     </div>
                 </div>
 

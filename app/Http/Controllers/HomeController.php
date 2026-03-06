@@ -22,4 +22,12 @@ class HomeController extends Controller
 
         return view('home', compact('featuredHotels', 'featuredFlights'));
     }
+
+    /**
+     * Display the FAQ page.
+     */
+    public function faq()
+    {
+        return view('faq');
+    }
 }

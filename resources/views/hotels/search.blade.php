@@ -100,7 +100,7 @@
                     <h3 class="text-lg font-bold text-white mb-1 group-hover:text-primary-400 transition-colors line-clamp-1 truncate">{{ $hotel['name'] }}</h3>
                     <p class="text-sm text-gray-400 flex items-center gap-1 mb-3 truncate">
                         <i data-lucide="map-pin" class="w-3.5 h-3.5 flex-shrink-0"></i>
-                        <span class="truncate">{{ $hotel['address'] }}, {{ $hotel['city'] }}</span>
+                        <span class="truncate">{{ $hotel['address'] }}, {{ $hotel['city'] }}, {{ $hotel['country'] }}</span>
                     </p>
                     <div class="flex flex-wrap gap-1.5 mb-4">
                         @foreach(array_slice($hotel['amenities'], 0, 4) as $amenity)

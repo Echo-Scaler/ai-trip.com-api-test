@@ -86,7 +86,7 @@
                 </h2>
                 <div id="hotel-map" class="h-64 w-full rounded-xl overflow-hidden border border-white/10 z-0"></div>
                 <p class="text-sm text-gray-400 mt-3 flex items-center gap-2">
-                    <i data-lucide="map-pin" class="w-4 h-4 text-gray-500"></i> {{ $hotel['address'] }}, {{ $hotel['city'] }}
+                    <i data-lucide="map-pin" class="w-4 h-4 text-gray-500"></i> {{ $hotel['address'] }}, {{ $hotel['city'] }}, {{ $hotel['country'] }}
                 </p>
             </div>
 

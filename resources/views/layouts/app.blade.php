@@ -258,6 +258,7 @@
                         <span class="flex items-center gap-2"><i data-lucide="plane" class="w-4 h-4"></i> {{ __('messages.flights') }}</span>
                     </a>
 
+
                     <div class="h-6 w-px bg-white/10 mx-2"></div>
 
                     <!-- Language Dropdown -->
@@ -302,6 +303,7 @@
                 <a href="{{ route('home') }}" class="block px-4 py-2.5 rounded-xl text-sm text-gray-300 hover:text-white hover:bg-white/5">{{ __('messages.home') }}</a>
                 <a href="{{ route('hotels.search') }}" class="block px-4 py-2.5 rounded-xl text-sm text-gray-300 hover:text-white hover:bg-white/5">{{ __('messages.hotels') }}</a>
                 <a href="{{ route('flights.search') }}" class="block px-4 py-2.5 rounded-xl text-sm text-gray-300 hover:text-white hover:bg-white/5">{{ __('messages.flights') }}</a>
+
 
                 <div class="border-t border-white/10 my-2"></div>
 
@@ -357,6 +359,7 @@
                     <ul class="space-y-2.5">
                         <li><a href="{{ route('hotels.search') }}" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">{{ __('messages.search_hotels') }}</a></li>
                         <li><a href="{{ route('flights.search') }}" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">{{ __('messages.search_flights') }}</a></li>
+                        <li><a href="{{ route('faq') }}" class="text-sm text-gray-400 hover:text-primary-400 transition-colors">{{ __('messages.faq') }}</a></li>
                     </ul>
                 </div>
                 <div>

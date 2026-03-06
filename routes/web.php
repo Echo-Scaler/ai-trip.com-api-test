@@ -13,8 +13,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/locale/language/{locale}', [LocaleController::class, 'setLanguage'])->name('locale.language');
 Route::get('/locale/currency/{currency}', [LocaleController::class, 'setCurrency'])->name('locale.currency');
 
-// Home
+// Home & General
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
 
 // Hotels
 Route::get('/hotels/search', [HotelController::class, 'search'])->name('hotels.search');
